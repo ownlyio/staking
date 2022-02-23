@@ -1,0 +1,38 @@
+#home {
+  width: 100%;
+  height: 100vh;
+}
+
+.home-sub {
+  width: 80%;
+}
+
+.home-cta a {
+  padding: 14px 0;
+  width: 220px;
+}
+
+.home-btn-1 {
+  margin-right: 10px;
+}
+
+.home-btn-2 {
+  border: 1px solid #ccc;
+}
+
+.home-img {
+  margin: 0 auto;
+  width: 60%;
+}
+
+.hiw-item-content {
+  border: 1px solid #ccc;
+  border-radius: 5px;
+  padding: 30px 5%;
+  background-color: white;
+}
+
+.hiw-item-sub {
+  width: 70%;
+  margin: 0 auto;
+}
