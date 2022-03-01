@@ -25,7 +25,12 @@
   width: 60%;
 }
 
-.hiw-item-content {
+#how-it-works {
+  margin-bottom: 5em;
+}
+
+.hiw-item-content,
+.splatform-item {
   border: 1px solid #ccc;
   border-radius: 5px;
   padding: 30px 5%;
@@ -35,4 +40,41 @@
 .hiw-item-sub {
   width: 70%;
   margin: 0 auto;
+}
+
+.splatform-btn-item {
+  width: 100px;
+  color: #616161;
+}
+
+.splatform-btn-item.active {
+  background-color: #16b99a;
+  color: white;
+  border-radius: 0;
+  transition: all 0.3s ease;
+}
+
+.splatform-btn-item:not(.active):hover,
+.splatform-btn-item:not(.active):focus {
+  color: #16b99a;
+  background-color: white;
+}
+
+.splatform-btn-item:focus {
+  outline: none !important;
+  box-shadow: none;
+}
+
+.splatform-item-content {
+  margin-bottom: 2em;
+}
+
+.splatform-item-title {
+  width: 80%;
+  margin: 0 auto;
+}
+
+.splatform-item-divider {
+  width: 100%;
+  border-bottom: 3px solid #f19150;
 }
