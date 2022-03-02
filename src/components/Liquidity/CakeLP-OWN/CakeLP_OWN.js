@@ -39,7 +39,6 @@ function CakeLP_OWN() {
         isApproved: false,
         detectedChangeMessage: "",
         hasMetamask: false,
-        hasWalletConnect: false,
         isLoaded: false,
         stakedAmount: 0,
         apr: "--",
