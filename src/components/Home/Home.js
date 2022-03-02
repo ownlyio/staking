@@ -1,11 +1,11 @@
 import './Home.css'
-
-import ownly from '../../img/ownly/own-token.webp'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faCoins, faReceipt, faWallet } from '@fortawesome/free-solid-svg-icons'
 
-import ownMustachio from '../../img/staking/own-mustachio-rulers.png'
-import ownBusd from '../../img/staking/own-busd.png'
+import ItemOWNMustachio from '../../staking_items/NFT/OWN-Mustachio/ItemOWN_Mustachio'
+import ItemCakeLPOWN from '../../staking_items/Liquidity/CakeLP-OWN/ItemCakeLP_OWN'
+
+import ownly from '../../img/ownly/own-token.webp'
 
 export default function Home() {
     const filterStakingOptions = (e, type) => {
@@ -109,82 +109,9 @@ export default function Home() {
                         </div>
                     </div>
                     <div className="row justify-content-start align-items-center">
-                        <div className="col-12 col-md-4 s-item nft">
-                            <div className="splatform-item">
-                                <div className="splatform-item-img">
-                                    <img className="w-100" src={ownMustachio} alt="Stake OWN, Earn Mustachio Ruler" />
-                                </div>
-                                <p className="splatform-item-title text-center neo-bold text-color-6 font-size-170">Stake OWN, Earn Mustachio Ruler</p>
-                                <div className="splatform-item-divider my-3"></div>
-                                <div className="splatform-item-content">
-                                    <div className="d-flex justify-content-between mb-3">
-                                        <div className="splatform-desc text-left font-semibold font-size-100">Total Deposits</div>
-                                        <div className="splatform-desc text-right text-color-7 font-size-100">0.0000003</div>
-                                    </div>
-                                    <div className="d-flex justify-content-between mb-3">
-                                        <div className="splatform-desc text-left font-semibold font-size-100">Stake Required</div>
-                                        <div className="splatform-desc text-right text-color-7 font-size-100">0.0000003</div>
-                                    </div>
-                                    <div className="d-flex justify-content-between mb-3">
-                                        <div className="splatform-desc text-left font-semibold font-size-100">Remaining Rewards</div>
-                                        <div className="splatform-desc text-right text-color-7 font-size-100">300 MUSTACHIOS</div>
-                                    </div>
-                                    <div className="d-flex justify-content-between mb-3">
-                                        <div className="splatform-desc text-left font-semibold font-size-100">Your Deposit</div>
-                                        <div className="splatform-desc text-right text-color-7 font-size-100">0.0000003</div>
-                                    </div>
-                                    <div className="d-flex justify-content-between mb-3">
-                                        <div className="splatform-desc text-left font-semibold font-size-100">Date of Minting</div>
-                                        <div className="splatform-desc text-right text-color-7 font-size-100">April 10, 2022</div>
-                                    </div>
-                                    <div className="d-flex justify-content-between mb-3">
-                                        <div className="splatform-desc text-left font-semibold font-size-100">Duration</div>
-                                        <div className="splatform-desc text-right text-color-7 font-size-100">30 Days (30 Remaining)</div>
-                                    </div>
-                                </div>
-                                <div className="splatform-item-btn">
-                                    <button className="btn btn-custom-3 w-100 font-size-150">Stake Now!</button>
-                                </div>
-                            </div>
-                        </div>
-                        <div className="col-12 col-md-4 s-item liquidity">
-                            <div className="splatform-item">
-                                <div className="splatform-item-img">
-                                    <img className="w-100" src={ownBusd} alt="Stake OWN/BUSD, Earn OWN" />
-                                </div>
-                                <p className="splatform-item-title text-center neo-bold text-color-6 font-size-170">Stake OWN/BUSD, Earn OWN</p>
-                                <div className="splatform-item-divider my-3"></div>
-                                <div className="splatform-item-content">
-                                    <div className="d-flex justify-content-between mb-3">
-                                        <div className="splatform-desc text-left font-semibold font-size-100">Total Deposits</div>
-                                        <div className="splatform-desc text-right text-color-7 font-size-100">0.0000003</div>
-                                    </div>
-                                    <div className="d-flex justify-content-between mb-3">
-                                        <div className="splatform-desc text-left font-semibold font-size-100">Your Total Deposits</div>
-                                        <div className="splatform-desc text-right text-color-7 font-size-100">0.0000003</div>
-                                    </div>
-                                    <div className="d-flex justify-content-between mb-3">
-                                        <div className="splatform-desc text-left font-semibold font-size-100">Your Rate</div>
-                                        <div className="splatform-desc text-right text-color-7 font-size-100">0.0000003</div>
-                                    </div>
-                                    <div className="d-flex justify-content-between mb-3">
-                                        <div className="splatform-desc text-left font-semibold font-size-100">APR</div>
-                                        <div className="splatform-desc text-right text-color-7 font-size-100">10.23 %</div>
-                                    </div>
-                                    <div className="d-flex justify-content-between mb-3">
-                                        <div className="splatform-desc text-left font-semibold font-size-100">Total Rewards</div>
-                                        <div className="splatform-desc text-right text-color-7 font-size-100">120,000,000 OWN</div>
-                                    </div>
-                                    <div className="d-flex justify-content-between mb-3">
-                                        <div className="splatform-desc text-left font-semibold font-size-100">Duration</div>
-                                        <div className="splatform-desc text-right text-color-7 font-size-100">120 Days (10 Remaining)</div>
-                                    </div>
-                                </div>
-                                <div className="splatform-item-btn">
-                                    <button className="btn btn-custom-3 w-100 font-size-150">Stake Now!</button>
-                                </div>
-                            </div>
-                        </div>
+                        {/* Start from the recent ones */}
+                        <ItemOWNMustachio />
+                        <ItemCakeLPOWN />
                     </div>
                 </div>
             </div>
