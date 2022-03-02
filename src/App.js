@@ -1,5 +1,5 @@
 import './App.css'
-import { BrowserRouter as Router, Switch, Route, Link } from 'react-router-dom'
+import { BrowserRouter as Router, Switch, Route } from 'react-router-dom'
 import { useState, useEffect } from 'react'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { Button, Modal } from 'react-bootstrap'
@@ -17,10 +17,8 @@ import { configureWeb3 } from './utils/web3Init'
 import networks from './utils/networks'
 
 function App() {
-    let web3, stakingContract
+    let web3
     const [_web3, setWeb3] = useState()
-    const [_stakingContract, setStakingContract] = useState()
-    const [_stakingTokenContract, setStakingTokenContract] = useState()
     const [state, setState] = useState({
         isConnected: false,
         account: "",
@@ -76,6 +74,8 @@ function App() {
             window.ethereum.on('accountsChanged', (accounts) => {
                 _setState("detectedChangeMessage", "Account change detected!")
                 handleShowDetected()
+                localStorage.removeItem("add")
+                localStorage.removeItem("conn")
             })
         }
     }
@@ -90,6 +90,8 @@ function App() {
                 if (chainId !== "0x61") { 
                     _setState("detectedChangeMessage", "Network change detected!")
                     handleShowDetected()
+                    localStorage.removeItem("add")
+                    localStorage.removeItem("conn")
                 }
             })
         }
@@ -135,6 +137,8 @@ function App() {
                 if (acct.length > 0) {
                     _setState("isConnected", true)
                     _setState("account", acct[0])
+                    localStorage.setItem("add", acct[0])
+                    localStorage.setItem("conn", true)
                 }
             } else {
                 handleShowWrongNetwork()
