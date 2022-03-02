@@ -8,11 +8,33 @@ import ownMustachio from '../../img/staking/own-mustachio-rulers.png'
 import ownBusd from '../../img/staking/own-busd.png'
 
 export default function Home() {
-    const filterStakingOptions = (type) => {
+    const filterStakingOptions = (e, type) => {
         // add active class
         const activeElement = document.querySelectorAll('.splatform-btn-item.active')[0]
         activeElement.classList.remove('active')
-        // console.log(e.target)
+        
+        const clickedElement = e.target
+        clickedElement.classList.add("active")
+
+        // remove items with display none
+        const itemsWithDisplayNone = document.querySelectorAll('.s-item.d-none')
+        for (var i = 0; i < itemsWithDisplayNone.length; i++) {
+            itemsWithDisplayNone[i].classList.remove('d-none')
+        }
+
+        // filter staking options by class name
+        // for type = 0, just remove the display none for all items
+        if (type === 1) { // liquidity
+            const otherItems = document.querySelectorAll(".s-item:not(.liquidity)")
+            for (var i = 0; i < otherItems.length; i++) {
+                otherItems[i].classList.add('d-none')
+            }
+        } else if (type == 2) { // nft
+            const otherItems = document.querySelectorAll(".s-item:not(.nft)")
+            for (var i = 0; i < otherItems.length; i++) {
+                otherItems[i].classList.add('d-none')
+            }
+        }
     }
 
     return (
@@ -30,7 +52,7 @@ export default function Home() {
                                 </div>
                             </div>
                         </div>
-                        <div className="col-12 col-md-6">
+                        <div className="col-12 col-md-6 d-none d-md-block">
                             <div className="home-img">
                                 <img src={ownly} alt="Ownly Logo" className="w-100" />
                             </div>
@@ -81,13 +103,13 @@ export default function Home() {
 
                     <div className="splatform-btns mb-4">
                         <div className="d-flex w-100">
-                            <button onClick={() => filterStakingOptions(0)} className="btn splatform-btn-item neo-bold active">All</button>
-                            <button onClick={() => filterStakingOptions(1)} className="btn splatform-btn-item neo-bold">Liquidity</button>
-                            <button onClick={() => filterStakingOptions(2)} className="btn splatform-btn-item neo-bold">NFTs</button>
+                            <button onClick={(e) => filterStakingOptions(e, 0)} className="btn splatform-btn-item neo-bold active">All</button>
+                            <button onClick={(e) => filterStakingOptions(e, 1)} className="btn splatform-btn-item neo-bold">Liquidity</button>
+                            <button onClick={(e) => filterStakingOptions(e, 2)} className="btn splatform-btn-item neo-bold">NFTs</button>
                         </div>
                     </div>
                     <div className="row justify-content-start align-items-center">
-                        <div className="col-12 col-md-4 nft">
+                        <div className="col-12 col-md-4 s-item nft">
                             <div className="splatform-item">
                                 <div className="splatform-item-img">
                                     <img className="w-100" src={ownMustachio} alt="Stake OWN, Earn Mustachio Ruler" />
@@ -100,24 +122,24 @@ export default function Home() {
                                         <div className="splatform-desc text-right text-color-7 font-size-100">0.0000003</div>
                                     </div>
                                     <div className="d-flex justify-content-between mb-3">
-                                        <div className="splatform-desc text-left font-semibold font-size-100">Minimum Stake</div>
+                                        <div className="splatform-desc text-left font-semibold font-size-100">Stake Required</div>
                                         <div className="splatform-desc text-right text-color-7 font-size-100">0.0000003</div>
                                     </div>
                                     <div className="d-flex justify-content-between mb-3">
-                                        <div className="splatform-desc text-left font-semibold font-size-100">Your Total Deposits</div>
+                                        <div className="splatform-desc text-left font-semibold font-size-100">Remaining Rewards</div>
+                                        <div className="splatform-desc text-right text-color-7 font-size-100">300 MUSTACHIOS</div>
+                                    </div>
+                                    <div className="d-flex justify-content-between mb-3">
+                                        <div className="splatform-desc text-left font-semibold font-size-100">Your Deposit</div>
                                         <div className="splatform-desc text-right text-color-7 font-size-100">0.0000003</div>
                                     </div>
                                     <div className="d-flex justify-content-between mb-3">
-                                        <div className="splatform-desc text-left font-semibold font-size-100">Your Rewards</div>
-                                        <div className="splatform-desc text-right text-color-7 font-size-100">10</div>
-                                    </div>
-                                    <div className="d-flex justify-content-between mb-3">
-                                        <div className="splatform-desc text-left font-semibold font-size-100">Total Rewards</div>
-                                        <div className="splatform-desc text-right text-color-7 font-size-100">120,000,000 OWN</div>
+                                        <div className="splatform-desc text-left font-semibold font-size-100">Date of Minting</div>
+                                        <div className="splatform-desc text-right text-color-7 font-size-100">April 10, 2022</div>
                                     </div>
                                     <div className="d-flex justify-content-between mb-3">
                                         <div className="splatform-desc text-left font-semibold font-size-100">Duration</div>
-                                        <div className="splatform-desc text-right text-color-7 font-size-100">120 Days (10 Remaining)</div>
+                                        <div className="splatform-desc text-right text-color-7 font-size-100">30 Days (30 Remaining)</div>
                                     </div>
                                 </div>
                                 <div className="splatform-item-btn">
@@ -125,7 +147,7 @@ export default function Home() {
                                 </div>
                             </div>
                         </div>
-                        <div className="col-12 col-md-4 liquidity">
+                        <div className="col-12 col-md-4 s-item liquidity">
                             <div className="splatform-item">
                                 <div className="splatform-item-img">
                                     <img className="w-100" src={ownBusd} alt="Stake OWN/BUSD, Earn OWN" />
