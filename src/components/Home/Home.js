@@ -4,7 +4,17 @@ import ownly from '../../img/ownly/own-token.webp'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faCoins, faReceipt, faWallet } from '@fortawesome/free-solid-svg-icons'
 
+import ownMustachio from '../../img/staking/own-mustachio-rulers.png'
+import ownBusd from '../../img/staking/own-busd.png'
+
 export default function Home() {
+    const filterStakingOptions = (type) => {
+        // add active class
+        const activeElement = document.querySelectorAll('.splatform-btn-item.active')[0]
+        activeElement.classList.remove('active')
+        // console.log(e.target)
+    }
+
     return (
         <section>
             <div id="home">
@@ -71,14 +81,17 @@ export default function Home() {
 
                     <div className="splatform-btns mb-4">
                         <div className="d-flex w-100">
-                            <button className="btn splatform-btn-item neo-bold active">All</button>
-                            <button className="btn splatform-btn-item neo-bold">Liquidity</button>
-                            <button className="btn splatform-btn-item neo-bold">NFTs</button>
+                            <button onClick={() => filterStakingOptions(0)} className="btn splatform-btn-item neo-bold active">All</button>
+                            <button onClick={() => filterStakingOptions(1)} className="btn splatform-btn-item neo-bold">Liquidity</button>
+                            <button onClick={() => filterStakingOptions(2)} className="btn splatform-btn-item neo-bold">NFTs</button>
                         </div>
                     </div>
                     <div className="row justify-content-start align-items-center">
-                        <div className="col-12 col-md-4">
+                        <div className="col-12 col-md-4 nft">
                             <div className="splatform-item">
+                                <div className="splatform-item-img">
+                                    <img className="w-100" src={ownMustachio} alt="Stake OWN, Earn Mustachio Ruler" />
+                                </div>
                                 <p className="splatform-item-title text-center neo-bold text-color-6 font-size-170">Stake OWN, Earn Mustachio Ruler</p>
                                 <div className="splatform-item-divider my-3"></div>
                                 <div className="splatform-item-content">
@@ -112,8 +125,11 @@ export default function Home() {
                                 </div>
                             </div>
                         </div>
-                        <div className="col-12 col-md-4">
+                        <div className="col-12 col-md-4 liquidity">
                             <div className="splatform-item">
+                                <div className="splatform-item-img">
+                                    <img className="w-100" src={ownBusd} alt="Stake OWN/BUSD, Earn OWN" />
+                                </div>
                                 <p className="splatform-item-title text-center neo-bold text-color-6 font-size-170">Stake OWN/BUSD, Earn OWN</p>
                                 <div className="splatform-item-divider my-3"></div>
                                 <div className="splatform-item-content">

@@ -65,6 +65,11 @@
   box-shadow: none;
 }
 
+.splatform-item-img {
+  width: 170px;
+  margin: 0 auto 20px;
+}
+
 .splatform-item-content {
   margin-bottom: 2em;
 }
