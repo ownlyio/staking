@@ -7,7 +7,10 @@ import ItemCakeLPOWN from '../../staking_items/Liquidity/CakeLP-OWN/ItemCakeLP_O
 
 import ownly from '../../img/ownly/own-token.webp'
 
-export default function Home() {
+export default function Home(props) {
+    const acct = props.account
+    const isConnected = props.isConnected
+
     const filterStakingOptions = (e, type) => {
         // add active class
         const activeElement = document.querySelectorAll('.splatform-btn-item.active')[0]
@@ -111,7 +114,9 @@ export default function Home() {
                     <div className="row justify-content-start align-items-center">
                         {/* Start from the recent ones */}
                         <ItemOWNMustachio />
-                        <ItemCakeLPOWN />
+                        <ItemCakeLPOWN 
+                            isConnected={isConnected} 
+                            account={acct} />
                     </div>
                 </div>
             </div>

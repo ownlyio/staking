@@ -25,12 +25,6 @@ function App() {
         hasMetamask: false,
     })
 
-    // Other Variables
-    // PRODUCTION
-    // const explorerUrl = "https://bscscan.com/tx/"
-    // DEVELOPMENT
-    const explorerUrl = "https://testnet.bscscan.com/tx/"
-
     // Modals
     const [showOnError, setShowOnError] = useState(false)
     const handleCloseOnError = () => setShowOnError(false)
@@ -55,7 +49,7 @@ function App() {
             // Metamask
             const web3Metamask = configureWeb3()
 
-            if (web3Metamask !== 1) { 
+            if (web3Metamask !== 1) {
                 setWeb3(web3Metamask)
                 _setState("hasMetamask", true)
             } else {
@@ -68,14 +62,34 @@ function App() {
         networkChangedListener()
     }, [])
 
+    // connect wallet
+    const connect = async () => {
+        if (state.hasMetamask) {
+            const netId = await _web3.eth.net.getId() // 97 - BSC testnet, 56 - BSC Mainnet
+            
+            // PRODUCTION
+            // if (netId === 56) {
+            // DEVELOPMENT
+            if (netId === 97) {
+                const acct = await window.ethereum.request({ method: "eth_requestAccounts"})
+                if (acct.length > 0) {
+                    _setState("isConnected", true)
+                    _setState("account", acct[0])
+                }
+            } else {
+                handleShowWrongNetwork()
+            }
+        } else {
+            handleShowMetamaskInstall()
+        }
+    }
+
     // account change listener (metamask only)
     const accountChangedListener = () => {
         if (window.ethereum) {
             window.ethereum.on('accountsChanged', (accounts) => {
                 _setState("detectedChangeMessage", "Account change detected!")
                 handleShowDetected()
-                localStorage.removeItem("add")
-                localStorage.removeItem("conn")
             })
         }
     }
@@ -90,8 +104,6 @@ function App() {
                 if (chainId !== "0x61") { 
                     _setState("detectedChangeMessage", "Network change detected!")
                     handleShowDetected()
-                    localStorage.removeItem("add")
-                    localStorage.removeItem("conn")
                 }
             })
         }
@@ -124,30 +136,6 @@ function App() {
         }
     }
 
-    // connect wallet
-    const connect = async () => {
-        if (state.hasMetamask) {
-            const netId = await _web3.eth.net.getId() // 97 - BSC testnet, 56 - BSC Mainnet
-            
-            // PRODUCTION
-            // if (netId === 56) {
-            // DEVELOPMENT
-            if (netId === 97) {
-                const acct = await window.ethereum.request({ method: "eth_requestAccounts"})
-                if (acct.length > 0) {
-                    _setState("isConnected", true)
-                    _setState("account", acct[0])
-                    localStorage.setItem("add", acct[0])
-                    localStorage.setItem("conn", true)
-                }
-            } else {
-                handleShowWrongNetwork()
-            }
-        } else {
-            handleShowMetamaskInstall()
-        }
-    }
-
     // make an address short
     const shortenAddress = (address, prefixCount, postfixCount) => {
         let prefix = address.substr(0, prefixCount);
@@ -167,7 +155,11 @@ function App() {
                 <Navbar connect={connect} isConnected={state.isConnected} account={state.account} shortenAddress={shortenAddress} />
 
                 <Switch>
-                    <Route exact path="/" component={Home}></Route>
+                    <Route exact path="/" render={props => <Home 
+                        isConnected={state.isConnected} 
+                        account={state.account} 
+                        {...props} />}>    
+                    </Route>
                     <Route exact path="/cakelp-own" component={CakeLP_OWN}></Route>
                 </Switch>
 

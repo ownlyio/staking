@@ -4,26 +4,27 @@ import axios from 'axios'
 import ownBusd from '../../../img/staking/own-busd.png'
 
 // PRODUCTION
-import { stakingTokenAbi, stakingTokenAddress } from '../../../utils/contracts/liquidity/cakelp-own/stakingToken'
-import { stakingAbi, stakingAddress } from '../../../utils/contracts/liquidity/cakelp-own/staking'
+// import { stakingTokenAbi, stakingTokenAddress } from '../../../utils/contracts/liquidity/cakelp-own/stakingToken'
+// import { stakingAbi, stakingAddress } from '../../../utils/contracts/liquidity/cakelp-own/staking'
 
 // DEVELOPMENT
-// import { stakingTokenAbi, stakingTokenAddress } from '../../../utils/contracts/liquidity/cakelp-own/stakingTokenDev'
-// import { stakingAbi, stakingAddress } from '../../../utils/contracts/liquidity/cakelp-own/stakingDev'
+import { stakingTokenAbi, stakingTokenAddress } from '../../../utils/contracts/liquidity/cakelp-own/stakingTokenDev'
+import { stakingAbi, stakingAddress } from '../../../utils/contracts/liquidity/cakelp-own/stakingDev'
 
 // Utils
 import { configureWeb3 } from '../../../utils/web3Init'
 import { getApr } from '../../../utils/apr'
 
-function ItemCakeLPOWN() {
+function ItemCakeLPOWN(props) {
+    const acct = props.account
+    const isConnected = props.isConnected
+
     let web3, stakingContract
     const [_web3, setWeb3] = useState()
     const [_stakingContract, setStakingContract] = useState()
     const [_stakingTokenContract, setStakingTokenContract] = useState()
     const [state, setState] = useState({
         isLoaded: false,
-        isConnected: false,
-        account: "",
         hasMetamask: false,
         totalLPTokensStaked: 0,
         userCurrentLPStaked: 0,
@@ -32,6 +33,51 @@ function ItemCakeLPOWN() {
         userRewardsEarned: 0,
         lpStakingDuration: 0,
     })
+
+    // function that will get the details of the user's account (balances, staked tokens etc)
+    const getDetailsOfUserAcct = async () => {
+        // compute user rate
+        function computeUserRate(totalLp, lpStaked) {
+            const ownRewardPerWeek = 7000000
+            let rate = (ownRewardPerWeek * _web3.utils.fromWei(lpStaked)) / _web3.utils.fromWei(totalLp)
+            _setState("userRate", rate)
+        }
+
+        const lpTokenBal = await _stakingTokenContract.methods.balanceOf(acct).call()
+        _setState("currentLPBalance", _web3.utils.fromWei(lpTokenBal))
+        const lpTokenStaked = await _stakingContract.methods.balanceOf(acct).call()
+        _setState("userCurrentLPStaked", _web3.utils.fromWei(lpTokenStaked))
+        const rewardsEarned = await _stakingContract.methods.earned(acct).call()
+        _setState("userRewardsEarned", _web3.utils.fromWei(rewardsEarned))
+        computeUserRate(_web3.utils.toWei(state.totalLPTokensStaked), lpTokenStaked)
+
+        _setState("isLoaded", true)
+        
+        // refresh data every 10 seconds
+        // setInterval(() => {
+        //     async function _getDetails() {
+        //         // get total deposits
+        //         const totalLP = await _stakingContract.methods.totalSupply().call()
+        //         _setState("totalLPTokensStaked", _web3.utils.fromWei(totalLP))
+
+        //         // APR
+        //         const apr = await getApr()
+        //         _setState("apr", roundOff(apr))
+
+        //         const lpTokenBal = await _stakingTokenContract.methods.balanceOf(acct).call()
+        //         _setState("currentLPBalance", _web3.utils.fromWei(lpTokenBal))
+        //         const lpTokenStaked = await _stakingContract.methods.balanceOf(acct).call()
+        //         _setState("userCurrentLPStaked", _web3.utils.fromWei(lpTokenStaked))
+        //         const rewardsEarned = await _stakingContract.methods.earned(acct).call()
+        //         _setState("userRewardsEarned", _web3.utils.fromWei(rewardsEarned))
+
+        //         // compute user rate
+        //         computeUserRate(totalLP, lpTokenStaked)
+        //     }
+            
+        //     _getDetails()
+        // }, 10000)
+    }
 
     // state updater
     const _setState = (name, value) => {
@@ -48,30 +94,27 @@ function ItemCakeLPOWN() {
     const roundOff = num => {
         return +(Math.round(num + "e+2")  + "e-2");
     }
+
+    // add thousands separator
+    const addCommasToNumber = (x, decimal = 5) => {
+        if (!Number.isInteger(Number(x))) {
+            x = Number(x).toFixed(decimal)
+        }
+
+        return x.toString().replace(/^[+-]?\d+/, function(int) {
+            return int.replace(/(\d)(?=(\d{3})+$)/g, '$1,');
+        });
+    }
     
     useEffect(() => {
         async function _init() {
             // WEB3 RPC - BSC MAINNET
-            web3 = configureWeb3("https://bsc-dataseed.binance.org/")
+            // web3 = configureWeb3("https://bsc-dataseed.binance.org/")
             // WEB3 RPC - BSC TESTNET (COMMENT WHEN PRODUCTION)
-            // web3 = configureWeb3("https://data-seed-prebsc-1-s1.binance.org:8545/")
+            web3 = configureWeb3("https://data-seed-prebsc-1-s1.binance.org:8545/")
 
             // RPC Initialize
             stakingContract = new web3.eth.Contract(stakingAbi, stakingAddress)
-
-            // Metamask
-            const web3Metamask = configureWeb3()
-
-            if (web3Metamask !== 1) { 
-                const stakingContractMetamask = new web3Metamask.eth.Contract(stakingAbi, stakingAddress)
-                const stakingTokenContractMetamask = new web3Metamask.eth.Contract(stakingTokenAbi, stakingTokenAddress)
-                setWeb3(web3Metamask)
-                setStakingContract(stakingContractMetamask)
-                setStakingTokenContract(stakingTokenContractMetamask)
-                _setState("hasMetamask", true)
-            } else {
-                _setState("hasMetamask", false)
-            }
 
             // get staking duration
             const duration = await stakingContract.methods.periodFinish().call()
@@ -85,10 +128,28 @@ function ItemCakeLPOWN() {
             // APR
             const apr = await getApr()
             _setState("apr", roundOff(apr))
+
+            // Metamask account init
+            const web3Metamask = configureWeb3()
+
+            if (web3Metamask !== 1) { 
+                const stakingContractMetamask = new web3Metamask.eth.Contract(stakingAbi, stakingAddress)
+                const stakingTokenContractMetamask = new web3Metamask.eth.Contract(stakingTokenAbi, stakingTokenAddress)
+                setWeb3(web3Metamask)
+                setStakingContract(stakingContractMetamask)
+                setStakingTokenContract(stakingTokenContractMetamask)
+                _setState("hasMetamask", true)
+            } else {
+                _setState("hasMetamask", false)
+            }
         }
         
         _init()
-    })
+    }, [])
+
+    useEffect(() => {
+        if (isConnected && acct !== "") getDetailsOfUserAcct()
+    }, [isConnected, acct])
 
     return (
         <div className="col-12 col-md-4 s-item liquidity">
@@ -101,19 +162,31 @@ function ItemCakeLPOWN() {
                 <div className="splatform-item-content">
                     <div className="d-flex justify-content-between mb-3">
                         <div className="splatform-desc text-left font-semibold font-size-100">Total Deposits</div>
-                        <div className="splatform-desc text-right text-color-7 font-size-100">0.0000003</div>
+                        {isConnected ? (
+                            <div className="splatform-desc text-right text-color-7 font-size-100">{addCommasToNumber(state.totalLPTokensStaked, 5)} OWN/BUSD</div>
+                        ) : (
+                            <div className="splatform-desc text-right text-color-7 font-size-100">Connect Wallet</div>
+                        )}
                     </div>
                     <div className="d-flex justify-content-between mb-3">
                         <div className="splatform-desc text-left font-semibold font-size-100">Your Total Deposits</div>
-                        <div className="splatform-desc text-right text-color-7 font-size-100">0.0000003</div>
+                        {isConnected ? (
+                            <div className="splatform-desc text-right text-color-7 font-size-100">{addCommasToNumber(state.userCurrentLPStaked, 5)} OWN</div>
+                        ) : (
+                            <div className="splatform-desc text-right text-color-7 font-size-100">Connect Wallet</div>
+                        )}
                     </div>
                     <div className="d-flex justify-content-between mb-3">
                         <div className="splatform-desc text-left font-semibold font-size-100">Your Rate</div>
-                        <div className="splatform-desc text-right text-color-7 font-size-100">0.0000003</div>
+                        {isConnected ? (
+                            <div className="splatform-desc text-right text-color-7 font-size-100">{addCommasToNumber(state.userRate, 5)} OWN</div>
+                        ) : (
+                            <div className="splatform-desc text-right text-color-7 font-size-100">Connect Wallet</div>
+                        )}
                     </div>
                     <div className="d-flex justify-content-between mb-3">
                         <div className="splatform-desc text-left font-semibold font-size-100">APR</div>
-                        <div className="splatform-desc text-right text-color-7 font-size-100">10.23 %</div>
+                        <div className="splatform-desc text-right text-color-7 font-size-100">{state.apr} %</div>
                     </div>
                     <div className="d-flex justify-content-between mb-3">
                         <div className="splatform-desc text-left font-semibold font-size-100">Total Rewards</div>
@@ -121,7 +194,7 @@ function ItemCakeLPOWN() {
                     </div>
                     <div className="d-flex justify-content-between mb-3">
                         <div className="splatform-desc text-left font-semibold font-size-100">Duration</div>
-                        <div className="splatform-desc text-right text-color-7 font-size-100">120 Days (10 Remaining)</div>
+                        <div className="splatform-desc text-right text-color-7 font-size-100">120 Days ({state.lpStakingDuration} remaining)</div>
                     </div>
                 </div>
                 <div className="splatform-item-btn">
