@@ -113,7 +113,9 @@ export default function Home(props) {
                     </div>
                     <div className="row justify-content-start align-items-center">
                         {/* Start from the recent ones */}
-                        <ItemOWNMustachio />
+                        <ItemOWNMustachio
+                            isConnected={isConnected} 
+                            account={acct} />
                         <ItemCakeLPOWN 
                             isConnected={isConnected} 
                             account={acct} />

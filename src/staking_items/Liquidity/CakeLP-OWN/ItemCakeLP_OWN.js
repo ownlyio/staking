@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react'
+import { Link } from 'react-router-dom'
 import axios from 'axios'
 
 import ownBusd from '../../../img/staking/own-busd.png'
@@ -198,7 +199,7 @@ function ItemCakeLPOWN(props) {
                     </div>
                 </div>
                 <div className="splatform-item-btn">
-                    <button className="btn btn-custom-3 w-100 font-size-150">Stake Now!</button>
+                    <Link to="/cakelp-own" className="btn btn-custom-3 w-100 font-size-150">Stake Now!</Link>
                 </div>
             </div>  
         </div>
