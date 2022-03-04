@@ -1,5 +1,6 @@
 import './Home.css'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
+import { HashLink } from "react-router-hash-link"
 import { faCoins, faReceipt, faWallet } from '@fortawesome/free-solid-svg-icons'
 
 import ItemOWNMustachio from '../../staking_items/NFT/OWN-Mustachio/ItemOWN_Mustachio'
@@ -10,6 +11,12 @@ import ownly from '../../img/ownly/own-token.webp'
 export default function Home(props) {
     const acct = props.account
     const isConnected = props.isConnected
+
+    const scrollWithOffset = (el) => {
+        const yCoordinate = el.getBoundingClientRect().top + window.pageYOffset;
+        const yOffset = -100; 
+        window.scrollTo({ top: yCoordinate + yOffset, behavior: 'smooth' }); 
+    }
 
     const filterStakingOptions = (e, type) => {
         // add active class
@@ -50,8 +57,8 @@ export default function Home(props) {
                                 <p className="home-title font-size-320 text-color-3 neo-bold mb-4">Stake your OWN Tokens, Earn Rewards!</p>
                                 <p className="home-sub font-size-130 text-color-6 mb-5">Stake your $OWN tokens to our staking platform and earn rewards. Get exclusive bonuses and over 50.00% fees back. Keep your coins in your wallet and under control.</p>
                                 <div className="home-cta d-flex align-items-center">
-                                    <a href="#staking-platforms" className="home-btn-1 btn btn-custom-1 rounded-lg">See Staking Options</a>
-                                    <a href="#how-it-works" className="home-btn-2 btn btn-custom-8 rounded-lg">How it works</a>
+                                    <HashLink smooth to="#staking-platforms" className="home-btn-1 btn btn-custom-1 rounded-lg" scroll={el => scrollWithOffset(el)}>See Staking Options</HashLink>
+                                    <HashLink smooth to="#how-it-works" className="home-btn-2 btn btn-custom-8 rounded-lg" scroll={el => scrollWithOffset(el)}>How it works</HashLink>
                                 </div>
                             </div>
                         </div>
