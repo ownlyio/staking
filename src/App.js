@@ -162,7 +162,7 @@ function App() {
                         {...props} />}>    
                     </Route>
                     <Route exact path="/cakelp-own" component={CakeLP_OWN}></Route>
-                    <Route exact path="/own-rulers" component={OWN_Mustachio}></Route>
+                    <Route exact path="/own-marauders" component={OWN_Mustachio}></Route>
                 </Switch>
 
                 <Footer />

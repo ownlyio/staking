@@ -28,21 +28,21 @@ export default function Home(props) {
 
         // remove items with display none
         const itemsWithDisplayNone = document.querySelectorAll('.s-item.d-none')
-        for (var i = 0; i < itemsWithDisplayNone.length; i++) {
-            itemsWithDisplayNone[i].classList.remove('d-none')
+        for (let x = 0; x < itemsWithDisplayNone.length; x++) {
+            itemsWithDisplayNone[x].classList.remove('d-none')
         }
 
         // filter staking options by class name
         // for type = 0, just remove the display none for all items
         if (type === 1) { // liquidity
             const otherItems = document.querySelectorAll(".s-item:not(.liquidity)")
-            for (var i = 0; i < otherItems.length; i++) {
+            for (let i = 0; i < otherItems.length; i++) {
                 otherItems[i].classList.add('d-none')
             }
-        } else if (type == 2) { // nft
+        } else if (type === 2) { // nft
             const otherItems = document.querySelectorAll(".s-item:not(.nft)")
-            for (var i = 0; i < otherItems.length; i++) {
-                otherItems[i].classList.add('d-none')
+            for (let j = 0; j < otherItems.length; j++) {
+                otherItems[j].classList.add('d-none')
             }
         }
     }
