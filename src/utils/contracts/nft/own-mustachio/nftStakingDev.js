@@ -1,11 +1,36 @@
-const nftStakingAddress = "0x2CE5D68c80f0499274b15134C9F4B17f411A8136"
+const nftStakingAddress = "0x429E67B4f9886fDd16EFbe13c6e6e8a75113a352"
 const nftStakingAbi = [
     {
+        "anonymous":false,
         "inputs":[
-            
+            {
+                "indexed":false,
+                "internalType":"address",
+                "name":"previousAdmin",
+                "type":"address"
+            },
+            {
+                "indexed":false,
+                "internalType":"address",
+                "name":"newAdmin",
+                "type":"address"
+            }
         ],
-        "stateMutability":"nonpayable",
-        "type":"constructor"
+        "name":"AdminChanged",
+        "type":"event"
+    },
+    {
+        "anonymous":false,
+        "inputs":[
+            {
+                "indexed":true,
+                "internalType":"address",
+                "name":"beacon",
+                "type":"address"
+            }
+        ],
+        "name":"BeaconUpgraded",
+        "type":"event"
     },
     {
         "anonymous":false,
@@ -25,6 +50,75 @@ const nftStakingAbi = [
         ],
         "name":"OwnershipTransferred",
         "type":"event"
+    },
+    {
+        "anonymous":false,
+        "inputs":[
+            {
+                "indexed":true,
+                "internalType":"address",
+                "name":"implementation",
+                "type":"address"
+            }
+        ],
+        "name":"Upgraded",
+        "type":"event"
+    },
+    {
+        "inputs":[
+            {
+                "internalType":"address",
+                "name":"account",
+                "type":"address"
+            },
+            {
+                "internalType":"address",
+                "name":"nftContractAddress",
+                "type":"address"
+            }
+        ],
+        "name":"getCurrentStakingItem",
+        "outputs":[
+            {
+                "components":[
+                    {
+                        "internalType":"address",
+                        "name":"nftContractAddress",
+                        "type":"address"
+                    },
+                    {
+                        "internalType":"address",
+                        "name":"account",
+                        "type":"address"
+                    },
+                    {
+                        "internalType":"uint256",
+                        "name":"amount",
+                        "type":"uint256"
+                    },
+                    {
+                        "internalType":"uint256",
+                        "name":"startTime",
+                        "type":"uint256"
+                    },
+                    {
+                        "internalType":"bool",
+                        "name":"isWithdrawnWithoutMinting",
+                        "type":"bool"
+                    },
+                    {
+                        "internalType":"bool",
+                        "name":"isClaimed",
+                        "type":"bool"
+                    }
+                ],
+                "internalType":"struct NFTStaking.StakingItem",
+                "name":"",
+                "type":"tuple"
+            }
+        ],
+        "stateMutability":"view",
+        "type":"function"
     },
     {
         "inputs":[
@@ -146,6 +240,11 @@ const nftStakingAbi = [
                 "internalType":"address",
                 "name":"account",
                 "type":"address"
+            },
+            {
+                "internalType":"address",
+                "name":"nftContractAddress",
+                "type":"address"
             }
         ],
         "name":"getStakingItems",
@@ -210,12 +309,42 @@ const nftStakingAbi = [
         "inputs":[
             
         ],
+        "name":"initialize",
+        "outputs":[
+            
+        ],
+        "stateMutability":"nonpayable",
+        "type":"function"
+    },
+    {
+        "inputs":[
+            
+        ],
         "name":"owner",
         "outputs":[
             {
                 "internalType":"address",
                 "name":"",
                 "type":"address"
+            }
+        ],
+        "stateMutability":"view",
+        "type":"function"
+    },
+    {
+        "inputs":[
+            {
+                "internalType":"address",
+                "name":"nftContractAddress",
+                "type":"address"
+            }
+        ],
+        "name":"remainingRewards",
+        "outputs":[
+            {
+                "internalType":"uint256",
+                "name":"",
+                "type":"uint256"
             }
         ],
         "stateMutability":"view",
@@ -236,16 +365,16 @@ const nftStakingAbi = [
         "inputs":[
             {
                 "internalType":"address",
-                "name":"collection",
+                "name":"nftContractAddress",
                 "type":"address"
             },
             {
-                "internalType":"bool",
-                "name":"status",
-                "type":"bool"
+                "internalType":"uint256",
+                "name":"quantity",
+                "type":"uint256"
             }
         ],
-        "name":"setCollection",
+        "name":"setCollectionMaxStaking",
         "outputs":[
             
         ],
@@ -306,6 +435,44 @@ const nftStakingAbi = [
         "inputs":[
             {
                 "internalType":"address",
+                "name":"nftContractAddress",
+                "type":"address"
+            }
+        ],
+        "name":"totalDeposits",
+        "outputs":[
+            {
+                "internalType":"uint256",
+                "name":"",
+                "type":"uint256"
+            }
+        ],
+        "stateMutability":"view",
+        "type":"function"
+    },
+    {
+        "inputs":[
+            {
+                "internalType":"address",
+                "name":"nftContractAddress",
+                "type":"address"
+            }
+        ],
+        "name":"totalStakes",
+        "outputs":[
+            {
+                "internalType":"uint256",
+                "name":"",
+                "type":"uint256"
+            }
+        ],
+        "stateMutability":"view",
+        "type":"function"
+    },
+    {
+        "inputs":[
+            {
+                "internalType":"address",
                 "name":"newOwner",
                 "type":"address"
             }
@@ -330,6 +497,56 @@ const nftStakingAbi = [
             
         ],
         "stateMutability":"nonpayable",
+        "type":"function"
+    },
+    {
+        "inputs":[
+            {
+                "internalType":"address",
+                "name":"newImplementation",
+                "type":"address"
+            }
+        ],
+        "name":"upgradeTo",
+        "outputs":[
+            
+        ],
+        "stateMutability":"nonpayable",
+        "type":"function"
+    },
+    {
+        "inputs":[
+            {
+                "internalType":"address",
+                "name":"newImplementation",
+                "type":"address"
+            },
+            {
+                "internalType":"bytes",
+                "name":"data",
+                "type":"bytes"
+            }
+        ],
+        "name":"upgradeToAndCall",
+        "outputs":[
+            
+        ],
+        "stateMutability":"payable",
+        "type":"function"
+    },
+    {
+        "inputs":[
+            
+        ],
+        "name":"version",
+        "outputs":[
+            {
+                "internalType":"string",
+                "name":"",
+                "type":"string"
+            }
+        ],
+        "stateMutability":"pure",
         "type":"function"
     }
 ]
