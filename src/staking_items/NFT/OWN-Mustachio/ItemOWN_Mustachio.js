@@ -28,6 +28,7 @@ function ItemOWNMustachio(props) {
     const [state, setState] = useState({
         isLoaded: false,
         hasMetamask: false,
+        isStaked: false,
         stakingId: 0,
         totalOwnTokensStaked: 0,
         stakeRequired: 0,
@@ -44,12 +45,25 @@ function ItemOWNMustachio(props) {
         const currentItem = await _nftStakingContract.methods.getStakingItem(currentItemId).call()
 
         if (Number(currentItem.startTime) !== 0) {
-            const options = {year: 'numeric', month: 'long', day: 'numeric'}
-            _setState("dateStaked", new Date(currentItem.startTime * 1000).toLocaleDateString("en-US", options))
+            if (currentItem.isWithdrawnWithoutMinting || currentItem.isClaimed) {
+                _setState("dateStaked", "--")
+            } else {
+                const options = {year: 'numeric', month: 'long', day: 'numeric'}
+                _setState("dateStaked", new Date(currentItem.startTime * 1000).toLocaleDateString("en-US", options))
+            }
         }
 
         if (Number(currentItem.amount) !== 0) {
-            _setState("userOwnDeposits", web3.utils.fromWei(currentItem.amount))
+            if (currentItem.isWithdrawnWithoutMinting || currentItem.isClaimed) {
+                _setState("userOwnDeposits", 0)
+                _setState("isStaked", false)
+            } else {
+                _setState("userOwnDeposits", _web3.utils.fromWei(currentItem.amount))
+                _setState("isStaked", true)
+            }
+        } else {
+            _setState("userOwnDeposits", 0)
+            _setState("isStaked", false)
         }
 
         // get staking duration
@@ -58,7 +72,7 @@ function ItemOWNMustachio(props) {
         _setState("nftStakingDuration", calculatedDuration)
 
         if (Number(currentItem.startTime) !== 0) {
-            const remainingDuration = Number(currentItem.startTime) + calculatedDuration
+            const remainingDuration = Number(currentItem.startTime) + Number(duration)
             const calculatedRemaining = await convertTimestamp(remainingDuration)
             _setState("userRemainingDuration", calculatedRemaining)
         }
@@ -83,7 +97,10 @@ function ItemOWNMustachio(props) {
     // convert a timestamp to days
     const convertTimestamp = async unixTime => {
         const req = await axios.get(`https://ownly.tk/api/get-remaining-time-from-timestamp/${unixTime}`)
-        return Math.floor(req.data / (3600*24))
+        // PRODUCTION
+        // return Math.floor(req.data / (3600*24))
+        // DEVELOPMENT
+        return req.data / (3600*24)
     }
 
     // add thousands separator
@@ -184,7 +201,11 @@ function ItemOWNMustachio(props) {
                     <div className="d-flex justify-content-between mb-3">
                         <div className="splatform-desc text-left font-semibold font-size-100">Duration</div>
                         {isConnected ? (
-                            <div className="splatform-desc text-right text-color-7 font-size-100">{addCommasToNumber(state.nftStakingDuration)} Days ({addCommasToNumber(state.userRemainingDuration)} remaining)</div>
+                            state.isStaked ? (
+                                <div className="splatform-desc text-right text-color-7 font-size-100">{addCommasToNumber(state.nftStakingDuration)} Days ({addCommasToNumber(state.userRemainingDuration)} remaining)</div>
+                            ) : (
+                                <div className="splatform-desc text-right text-color-7 font-size-100">{addCommasToNumber(state.nftStakingDuration)} Days</div>
+                            )
                         ) : (
                             <div className="splatform-desc text-right text-color-7 font-size-100">Connect Wallet</div>
                         )}

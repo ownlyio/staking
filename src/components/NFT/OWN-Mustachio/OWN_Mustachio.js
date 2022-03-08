@@ -34,6 +34,7 @@ function OWN_Mustachio() {
         isConnected: false,
         account: "",
         currentOwnBalance: 0,
+        currentStakeItemId: 0,
         helpText: "",
         isApproved: false,
         isStaked: false,
@@ -73,9 +74,9 @@ function OWN_Mustachio() {
     const [showStaked, setShowStaked] = useState(false)
     const handleCloseStaked = () => setShowStaked(false)
     const handleShowStaked = () => setShowStaked(true)
-    const [showClaim, setShowClaim] = useState(false)
-    const handleCloseClaim = () => setShowClaim(false)
-    const handleShowClaim = () => setShowClaim(true)
+    const [showUnstake, setShowUnstake] = useState(false)
+    const handleCloseUnstake = () => setShowUnstake(false)
+    const handleShowUnstake = () => setShowUnstake(true)
     const [showExit, setShowExit] = useState(false)
     const handleCloseExit = () => setShowExit(false)
     const handleShowExit = () => setShowExit(true)
@@ -168,6 +169,10 @@ function OWN_Mustachio() {
         const totalStaked = await _nftStakingContract.methods.totalDeposits(nftTokenAddress).call()
         _setState("totalOwnTokensStaked", _web3.utils.fromWei(totalStaked))
 
+        // get remaining rewards
+        const remainingRewards = await _nftStakingContract.methods.remainingRewards(nftTokenAddress).call()
+        _setState("remainingRewards", remainingRewards)
+
         getDetailsOfUserAcct(state.account)
     }
 
@@ -176,14 +181,27 @@ function OWN_Mustachio() {
         const currentItemId = await _nftStakingContract.methods.getCurrentStakingItemId(acct, nftTokenAddress).call()
         const currentItem = await _nftStakingContract.methods.getStakingItem(currentItemId).call()
 
+        _setState("currentStakeItemId", currentItemId)
+        console.log(currentItemId)
+        console.log(currentItem)
+
         if (Number(currentItem.startTime) !== 0) {
-            const options = {year: 'numeric', month: 'long', day: 'numeric'}
-            _setState("dateStaked", new Date(currentItem.startTime * 1000).toLocaleDateString("en-US", options))
+            if (currentItem.isWithdrawnWithoutMinting || currentItem.isClaimed) {
+                _setState("dateStaked", "--")
+            } else {
+                const options = {year: 'numeric', month: 'long', day: 'numeric'}
+                _setState("dateStaked", new Date(currentItem.startTime * 1000).toLocaleDateString("en-US", options))
+            }
         }
 
         if (Number(currentItem.amount) !== 0) {
-            _setState("userOwnDeposits", _web3.utils.fromWei(currentItem.amount))
-            _setState("isStaked", true)
+            if (currentItem.isWithdrawnWithoutMinting || currentItem.isClaimed) {
+                _setState("userOwnDeposits", 0)
+                _setState("isStaked", false)
+            } else {
+                _setState("userOwnDeposits", _web3.utils.fromWei(currentItem.amount))
+                _setState("isStaked", true)
+            }
         } else {
             _setState("userOwnDeposits", 0)
             _setState("isStaked", false)
@@ -200,9 +218,7 @@ function OWN_Mustachio() {
 
         if (Number(currentItem.startTime) !== 0) {
             const remainingDuration = Number(currentItem.startTime) + Number(duration)
-            console.log(remainingDuration)
             const calculatedRemaining = await convertTimestamp(remainingDuration)
-            console.log(calculatedRemaining)
             _setState("userRemainingDuration", calculatedRemaining)
         }
 
@@ -294,32 +310,37 @@ function OWN_Mustachio() {
             handleShowOnError()
             _setState("txError", "Please provide a valid amount!")
         } else {
-            if (state.isStaked) {
+            if (state.currentOwnBalance < state.stakeRequired) {
                 handleShowOnError()
-                _setState("txError", "Cannot restake again. You can unstake and try again, or wait for the duration to finish and restake again.")
+                _setState("txError", "Insufficient balance! Please buy more OWN Tokens to proceed.")
             } else {
-                const approveAmount = _web3.utils.toWei(approveAmountEth)
-        
-                await _stakingTokenContract.methods.approve(nftStakingAddress, approveAmount).send({
-                    from: state.account
-                })
-                .on('transactionHash', function(hash){
-                    handleShowPleaseWait()
-                })
-                .on('error', function(error) {
-                    handleClosePleaseWait()
+                if (state.isStaked) {
                     handleShowOnError()
-                    _setState("isApproved", false)
-                    _setState("txError", error.message)
-                })
-                .then(async function(receipt) {
-                    handleClosePleaseWait()
-                    handleShowOnApprove()
-                    _setState("isApproved", true)
-                    _setState("txHash", receipt.transactionHash)
-                    _setState("stakedAmount", approveAmountEth)
-                    _setState("helpText", `${addCommasToNumber(approveAmountEth)} OWN ready for staking.`)
-                })
+                    _setState("txError", "Cannot restake again. You can unstake and try again, or wait for the duration to finish and restake again.")
+                } else {
+                    const approveAmount = _web3.utils.toWei(approveAmountEth)
+            
+                    await _stakingTokenContract.methods.approve(nftStakingAddress, approveAmount).send({
+                        from: state.account
+                    })
+                    .on('transactionHash', function(hash){
+                        handleShowPleaseWait()
+                    })
+                    .on('error', function(error) {
+                        handleClosePleaseWait()
+                        handleShowOnError()
+                        _setState("isApproved", false)
+                        _setState("txError", error.message)
+                    })
+                    .then(async function(receipt) {
+                        handleClosePleaseWait()
+                        handleShowOnApprove()
+                        _setState("isApproved", true)
+                        _setState("txHash", receipt.transactionHash)
+                        _setState("stakedAmount", approveAmountEth)
+                        _setState("helpText", `${addCommasToNumber(approveAmountEth)} OWN ready for staking.`)
+                    })
+                }
             }
         }
     }
@@ -355,63 +376,59 @@ function OWN_Mustachio() {
         }
     }
 
-    // claim
-    // const claimRewards = async () => {
-    //     const rewards = state.userRewardsEarned
+    // unstake
+    const unstake = async () => {
+        if (!state.isStaked) {
+            handleShowOnError()
+            _setState("txError", "You do not yet participated in the staking.")
+        } else {
+            await _nftStakingContract.methods.unstake(state.currentStakeItemId).send({
+                from: state.account
+            })
+            .on('transactionHash', function(hash){
+                handleShowPleaseWait()
+            })
+            .on('error', function(error) {
+                handleClosePleaseWait()
+                handleShowOnError()
+                _setState("txError", error.message)
+            })
+            .then(async function(receipt) {
+                handleClosePleaseWait()
+                handleShowUnstake()
+                _setState("txHash", receipt.transactionHash)
+                _setState("helpText", 'Successfully unstaked.')
+                updateDetails()
+            })
+        }
+    }
 
-    //     if (rewards === "0" || rewards === 0) {
-    //         handleShowOnError()
-    //         _setState("txError", "You do not have any reward tokens to claim.")
-    //     } else {
-    //         await _stakingContract.methods.getReward().send({
-    //             from: state.account
-    //         })
-    //         .on('transactionHash', function(hash){
-    //             handleShowPleaseWait()
-    //         })
-    //         .on('error', function(error) {
-    //             handleClosePleaseWait()
-    //             handleShowOnError()
-    //             _setState("txError", error.message)
-    //         })
-    //         .then(async function(receipt) {
-    //             handleClosePleaseWait()
-    //             handleShowClaim()
-    //             _setState("txHash", receipt.transactionHash)
-    //             _setState("helpText", 'Please enter an amount greater than 0.')
-    //             updateDetails()
-    //         })
-    //     }
-    // }
-
-    // exit
-    // const claimAndWithdraw = async () => {
-    //     const withdrawAmt = state.userCurrentLPStaked
-
-    //     if (withdrawAmt === "0" || withdrawAmt === 0 ) {
-    //         handleShowOnError()
-    //         _setState("txError", "You do not have any LP Tokens staked.")
-    //     } else {
-    //         await _stakingContract.methods.exit().send({
-    //             from: state.account
-    //         })
-    //         .on('transactionHash', function(hash){
-    //             handleShowPleaseWait()
-    //         })
-    //         .on('error', function(error) {
-    //             handleClosePleaseWait()
-    //             handleShowOnError()
-    //             _setState("txError", error.message)
-    //         })
-    //         .then(async function(receipt) {
-    //             handleClosePleaseWait()
-    //             handleShowExit()
-    //             _setState("txHash", receipt.transactionHash)
-    //             _setState("helpText", 'Please enter an amount greater than 0.')
-    //             updateDetails()
-    //         })
-    //     }
-    // }
+    // mint and withdraw
+    const mintWithdraw = async () => {
+        if (!state.isStaked) {
+            handleShowOnError()
+            _setState("txError", "Your staked balance is 0. Please restake and finish the staking period to mint your NFT.")
+        } else {
+            await _nftTokenContract.methods.stakeMint(nftStakingAddress, state.currentStakeItemId).send({
+                from: state.account
+            })
+            .on('transactionHash', function(hash){
+                handleShowPleaseWait()
+            })
+            .on('error', function(error) {
+                handleClosePleaseWait()
+                handleShowOnError()
+                _setState("txError", error.message)
+            })
+            .then(async function(receipt) {
+                handleClosePleaseWait()
+                handleShowExit()
+                _setState("txHash", receipt.transactionHash)
+                _setState("helpText", 'Thank you for participating!')
+                updateDetails()
+            })
+        }
+    }
 
     // Utility functions
     // convert seconds to days
@@ -425,7 +442,10 @@ function OWN_Mustachio() {
     // convert a timestamp to days
     const convertTimestamp = async unixTime => {
         const req = await axios.get(`https://ownly.tk/api/get-remaining-time-from-timestamp/${unixTime}`)
-        return Math.floor(req.data / (3600*24))
+        // PRODUCTION
+        // return Math.floor(req.data / (3600*24))
+        // DEVELOPMENT
+        return req.data / (3600*24)
     }
 
     // make an address short
@@ -530,10 +550,10 @@ function OWN_Mustachio() {
                                             )}
                                             <button onClick={enterStaking} type="button" className="btn stake-btn-func btn-custom-2" disabled={!state.isApproved}>STAKE</button>
                                         </div>
-                                        {/* <div className="d-flex justify-content-between">
-                                            <button onClick={claimRewards} type="button" className="btn stake-btn-func btn-custom-2" disabled={!state.isLoaded}>UNSTAKE</button>
-                                            <button onClick={claimAndWithdraw} type="button" className="btn stake-btn-func btn-custom-2" disabled={!state.isLoaded}>MINT</button>
-                                        </div> */}
+                                        <div className="d-flex justify-content-between">
+                                            <button onClick={unstake} type="button" className="btn stake-btn-func btn-custom-2" disabled={!state.isLoaded}>UNSTAKE</button>
+                                            <button onClick={mintWithdraw} type="button" className="btn stake-btn-func btn-custom-2" disabled={!state.isLoaded}>MINT</button>
+                                        </div>
                                     </form>
                                     {/* END STAKING FORM */}
 
@@ -716,16 +736,16 @@ function OWN_Mustachio() {
                 </Modal.Footer>
             </Modal>
 
-            {/* Modal for successful claim */}
-            <Modal show={showClaim} onHide={handleCloseClaim} backdrop="static" keyboard={false} size="md" centered>
+            {/* Modal for successful unstake */}
+            <Modal show={showUnstake} onHide={handleCloseUnstake} backdrop="static" keyboard={false} size="md" centered>
                 <Modal.Body>
                     <div className="text-center mb-3">
                         <FontAwesomeIcon color="green" size="6x" icon={faCheckCircle} />
                     </div>
-                    <p className="app-success-modal-content text-center font-andes text-lg">Your reward tokens are claimed successfully.</p>
+                    <p className="app-success-modal-content text-center font-andes text-lg">You have successfully unstaked your tokens.</p>
                 </Modal.Body>
                 <Modal.Footer className="justify-content-center">
-                    <Button className="font-w-hermann w-hermann-reg" variant="secondary" onClick={handleCloseClaim}>
+                    <Button className="font-w-hermann w-hermann-reg" variant="secondary" onClick={handleCloseUnstake}>
                         Close
                     </Button>
                     <Button className="font-w-hermann w-hermann-reg" variant="primary" onClick={() => window.open(explorerUrl + state.txHash, '_blank').focus()}>
@@ -740,7 +760,7 @@ function OWN_Mustachio() {
                     <div className="text-center mb-3">
                         <FontAwesomeIcon color="green" size="6x" icon={faCheckCircle} />
                     </div>
-                    <p className="app-success-modal-content text-center font-andes text-lg">You have successfully withdrawn your staked OWN Tokens and reward tokens.</p>
+                    <p className="app-success-modal-content text-center font-andes text-lg">You have successfully withdrawn your staked OWN Tokens and minted your Mustachio Marauder!</p>
                 </Modal.Body>
                 <Modal.Footer className="justify-content-center">
                     <Button className="font-w-hermann w-hermann-reg" variant="secondary" onClick={handleCloseExit}>
