@@ -75,7 +75,7 @@ export default function Home(props) {
                     <p className="hiw-title font-size-250 text-center text-color-2 neo-bold mb-3">How this works</p>
                     <p className="hiw-sub font-size-130 text-center text-color-7 mb-2">Simple steps to earn rewards and still having a full control of your coins</p>
 
-                    <div className="row justify-content-center align-items-center">
+                    <div className="row justify-content-center align-items-start">
                         <div className="col-12 col-md-4 mt-3">
                             <div className="hiw-item-content">
                                 <div className="hiw-icon mb-3 text-center">
