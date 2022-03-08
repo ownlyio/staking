@@ -1,4 +1,4 @@
-const nftStakingAddress = "0x429E67B4f9886fDd16EFbe13c6e6e8a75113a352"
+const nftStakingAddress = "0xC5cBC08ADA3e0d20a537b9386CE9d560aE86058a"
 const nftStakingAbi = [
     {
         "anonymous":false,
@@ -77,7 +77,26 @@ const nftStakingAbi = [
                 "type":"address"
             }
         ],
-        "name":"getCurrentStakingItem",
+        "name":"getCurrentStakingItemId",
+        "outputs":[
+            {
+                "internalType":"uint256",
+                "name":"",
+                "type":"uint256"
+            }
+        ],
+        "stateMutability":"view",
+        "type":"function"
+    },
+    {
+        "inputs":[
+            {
+                "internalType":"uint256",
+                "name":"stakingItemId",
+                "type":"uint256"
+            }
+        ],
+        "name":"getStakingItem",
         "outputs":[
             {
                 "components":[

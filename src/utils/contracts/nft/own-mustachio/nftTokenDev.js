@@ -1,4 +1,4 @@
-const nftTokenAddress = "0x9624872315C5C0Be1C332eC96Aa6C614e2349A0F"
+const nftTokenAddress = "0xA628896ec46Ce7C68A0E6eB4aF14fD5EBc834d2d"
 const nftTokenAbi = [
     {
         "inputs":[
