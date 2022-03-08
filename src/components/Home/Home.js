@@ -73,10 +73,10 @@ export default function Home(props) {
             <div id="how-it-works">
                 <div className="container h-100">
                     <p className="hiw-title font-size-250 text-center text-color-2 neo-bold mb-3">How this works</p>
-                    <p className="hiw-sub font-size-130 text-center text-color-7 mb-5">Simple steps to earn rewards and still having a full control of your coins</p>
+                    <p className="hiw-sub font-size-130 text-center text-color-7 mb-2">Simple steps to earn rewards and still having a full control of your coins</p>
 
                     <div className="row justify-content-center align-items-center">
-                        <div className="col-12 col-md-4">
+                        <div className="col-12 col-md-4 mt-3">
                             <div className="hiw-item-content">
                                 <div className="hiw-icon mb-3 text-center">
                                     <FontAwesomeIcon icon={faWallet} size="4x" color="#616161" />
@@ -85,7 +85,7 @@ export default function Home(props) {
                                 <p className="hiw-item-sub font-size-110 text-center neo-light text-color-6 mb-0">You decide how much you'll stake. You'll use your Metamask wallet for this.</p>
                             </div>
                         </div>
-                        <div className="col-12 col-md-4">
+                        <div className="col-12 col-md-4 mt-3">
                             <div className="hiw-item-content">
                                 <div className="hiw-icon mb-3 text-center">
                                     <FontAwesomeIcon icon={faReceipt} size="4x" color="#616161" />
@@ -94,7 +94,7 @@ export default function Home(props) {
                                 <p className="hiw-item-sub font-size-110 text-center neo-light text-color-6 mb-0">Approve and stake your coins from your own wallet to our platform.</p>
                             </div>
                         </div>
-                        <div className="col-12 col-md-4">
+                        <div className="col-12 col-md-4 mt-3">
                             <div className="hiw-item-content">
                                 <div className="hiw-icon mb-3 text-center">
                                     <FontAwesomeIcon icon={faCoins} size="4x" color="#616161" />

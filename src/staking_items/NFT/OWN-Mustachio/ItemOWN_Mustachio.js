@@ -34,6 +34,7 @@ function ItemOWNMustachio(props) {
         userOwnDeposits: 0,
         dateStaked: "--",
         nftStakingDuration: 0,
+        userRemainingDuration: 0,
     })
 
     // function that will get the details of the user's account 
@@ -52,6 +53,13 @@ function ItemOWNMustachio(props) {
         const duration = await _nftTokenContract.methods.getStakeDuration().call()
         const calculatedDuration = convertSecToDays(duration)
         _setState("nftStakingDuration", calculatedDuration)
+
+        if (Number(currentItem.startTime) !== 0) {
+            const remainingDuration = Number(currentItem.startTime) + calculatedDuration
+            const calculatedRemaining = await convertTimestamp(remainingDuration)
+            _setState("userRemainingDuration", calculatedRemaining)
+        }
+
 
         _setState("isLoaded", true)
     }
@@ -139,7 +147,7 @@ function ItemOWNMustachio(props) {
     }, [isConnected, acct])
 
     return (
-        <div className="col-12 col-md-4 s-item nft">
+        <div className="col-12 col-md-6 col-lg-4 s-item nft">
             <div className="splatform-item">
                 <div className="splatform-item-img">
                     <img className="w-100" src={ownMustachio} alt="Stake OWN, Earn Mustachio Ruler" />
@@ -182,7 +190,7 @@ function ItemOWNMustachio(props) {
                     <div className="d-flex justify-content-between mb-3">
                         <div className="splatform-desc text-left font-semibold font-size-100">Duration</div>
                         {isConnected ? (
-                            <div className="splatform-desc text-right text-color-7 font-size-100">{addCommasToNumber(state.nftStakingDuration)} Days ({addCommasToNumber(state.nftStakingDuration)} remaining)</div>
+                            <div className="splatform-desc text-right text-color-7 font-size-100">{addCommasToNumber(state.nftStakingDuration)} Days ({addCommasToNumber(state.userRemainingDuration)} remaining)</div>
                         ) : (
                             <div className="splatform-desc text-right text-color-7 font-size-100">Connect Wallet</div>
                         )}
