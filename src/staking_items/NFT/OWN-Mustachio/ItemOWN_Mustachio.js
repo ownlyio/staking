@@ -28,6 +28,7 @@ function ItemOWNMustachio(props) {
     const [state, setState] = useState({
         isLoaded: false,
         hasMetamask: false,
+        stakingId: 0,
         totalOwnTokensStaked: 0,
         stakeRequired: 0,
         remainingRewards: 0,
@@ -39,7 +40,9 @@ function ItemOWNMustachio(props) {
 
     // function that will get the details of the user's account 
     const getDetailsOfUserAcct = async () => {
-        const currentItem = await _nftStakingContract.methods.getCurrentStakingItem(acct, nftTokenAddress).call()
+        const currentItemId = await _nftStakingContract.methods.getCurrentStakingItemId(acct, nftTokenAddress).call()
+        const currentItem = await _nftStakingContract.methods.getStakingItem(currentItemId).call()
+
         if (Number(currentItem.startTime) !== 0) {
             const options = {year: 'numeric', month: 'long', day: 'numeric'}
             _setState("dateStaked", new Date(currentItem.startTime * 1000).toLocaleDateString("en-US", options))

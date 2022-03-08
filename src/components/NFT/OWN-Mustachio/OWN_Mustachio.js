@@ -36,6 +36,7 @@ function OWN_Mustachio() {
         currentOwnBalance: 0,
         helpText: "",
         isApproved: false,
+        isStaked: false,
         detectedChangeMessage: "",
         hasMetamask: false,
         isLoaded: false,
@@ -172,8 +173,9 @@ function OWN_Mustachio() {
 
     // function that will get the details of the user's account (balances, staked tokens etc)
     const getDetailsOfUserAcct = async acct  => {
-        const currentItem = await _nftStakingContract.methods.getCurrentStakingItem(acct, nftTokenAddress).call()
-        console.log(currentItem.startTime)
+        const currentItemId = await _nftStakingContract.methods.getCurrentStakingItemId(acct, nftTokenAddress).call()
+        const currentItem = await _nftStakingContract.methods.getStakingItem(currentItemId).call()
+
         if (Number(currentItem.startTime) !== 0) {
             const options = {year: 'numeric', month: 'long', day: 'numeric'}
             _setState("dateStaked", new Date(currentItem.startTime * 1000).toLocaleDateString("en-US", options))
@@ -181,6 +183,10 @@ function OWN_Mustachio() {
 
         if (Number(currentItem.amount) !== 0) {
             _setState("userOwnDeposits", _web3.utils.fromWei(currentItem.amount))
+            _setState("isStaked", true)
+        } else {
+            _setState("userOwnDeposits", 0)
+            _setState("isStaked", false)
         }
 
         // get OWN balance
@@ -288,7 +294,7 @@ function OWN_Mustachio() {
             handleShowOnError()
             _setState("txError", "Please provide a valid amount!")
         } else {
-            if (state.userOwnDeposits !== 0) {
+            if (state.isStaked) {
                 handleShowOnError()
                 _setState("txError", "Cannot restake again. You can unstake and try again, or wait for the duration to finish and restake again.")
             } else {
@@ -558,7 +564,11 @@ function OWN_Mustachio() {
                                         <div className="d-flex justify-content-between">
                                             <p className="mb-3 neo-bold font-size-90">Duration</p>
                                             { state.isConnected ? (
-                                                <p className="mb-3 neo-regular font-size-90">{addCommasToNumber(state.nftStakingDuration)} Days ({addCommasToNumber(state.userRemainingDuration)} remaining)</p>
+                                                state.isStaked ? (
+                                                    <p className="mb-3 neo-regular font-size-90">{addCommasToNumber(state.nftStakingDuration)} Days ({addCommasToNumber(state.userRemainingDuration)} remaining)</p>
+                                                ) : (
+                                                    <p className="mb-3 neo-regular font-size-90">{addCommasToNumber(state.nftStakingDuration)} Days</p>
+                                                )
                                             ) : (
                                                 <p className="mb-3 neo-regular font-size-90">Connect Wallet</p>
                                             )}
@@ -588,7 +598,11 @@ function OWN_Mustachio() {
                                         <div>
                                             <p className="mb-1 neo-bold font-size-110">Duration</p>
                                             { state.isConnected ? (
-                                                <p className="mb-1 neo-regular font-size-90">{addCommasToNumber(state.nftStakingDuration)} Days ({addCommasToNumber(state.userRemainingDuration)} remaining)</p>
+                                                state.isStaked ? (
+                                                    <p className="mb-1 neo-regular font-size-90">{addCommasToNumber(state.nftStakingDuration)} Days ({addCommasToNumber(state.userRemainingDuration)} remaining)</p>
+                                                ) : (
+                                                    <p className="mb-1 neo-regular font-size-90">{addCommasToNumber(state.nftStakingDuration)} Days</p>
+                                                )
                                             ) : (
                                                 <p className="mb-3 neo-regular font-size-90">Connect Wallet</p>
                                             )}
