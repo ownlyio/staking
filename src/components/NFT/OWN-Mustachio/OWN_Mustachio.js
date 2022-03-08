@@ -6,12 +6,9 @@ import { faCheckCircle, faExclamationCircle, faExternalLinkAlt, faSpinner } from
 import axios from 'axios'
 
 import Navbar from '../../Navbar/Navbar'
-import Footer from '../../Footer/Footer'
-import TopStakers from '../../TopStakers/TopStakers'
 
-import ownlyLogo from '../../../img/ownly/own-token.webp'
-import busdLogo from '../../../img/busd/busd.webp'
 import metamask from '../../../img/metamask.png'
+import ownMustachio from '../../../img/staking/own-mustachio-rulers.png'
 
 // PRODUCTION
 // import { stakingTokenAbi, stakingTokenAddress } from '../../../utils/contracts/liquidity/cakelp-own/stakingToken'
@@ -88,9 +85,9 @@ function OWN_Mustachio() {
     const [showDetected, setShowDetected] = useState(false)
     const handleCloseDetected = () => setShowDetected(false)
     const handleShowDetected = () => setShowDetected(true)
-    const [showTopStakers, setShowTopStakers] = useState(false)
-    const handleCloseTopStakers = () => setShowTopStakers(false)
-    const handleShowTopStakers = () => setShowTopStakers(true)
+    // const [showTopStakers, setShowTopStakers] = useState(false)
+    // const handleCloseTopStakers = () => setShowTopStakers(false)
+    // const handleShowTopStakers = () => setShowTopStakers(true)
 
     useEffect(() => {
         async function _init() {
@@ -133,65 +130,7 @@ function OWN_Mustachio() {
         _init()
         accountChangedListener()
         networkChangedListener()
-        getLiquidityStakingData(stakingAddress, 0)
     }, [])
-    
-
-    // API, web3, metamask and contract functions
-    // get liquidity staking data
-    const getLiquidityStakingData = (address, page) => {
-        const ownlyAPI = "https://ownly.tk/"
-
-        axios.get(`https://api.covalenthq.com/v1/56/address/${address}/transactions_v2/?quote-currency=USD&format=JSON&block-signed-at-asc=true&no-logs=false&page-number=${page}&key=ckey_994c8fdd549f44fa9b2b27f59a0`).then(data => {
-            let events = ["Staked", "RewardPaid"]
-
-            if (data) {
-                let items = data.data.data.items
-                let transactions = []
-
-                for (let i = 0; i < items.length; i++) {
-                    let j = items[i].log_events.length - 1
-
-                    if (events.includes(items[i].log_events[j].decoded.name)) {
-                        transactions.push(items[i].log_events[j])
-                    }
-                }
-
-                axios.post(`${ownlyAPI}api/add-staking-transactions`, {
-                    transactions: transactions,
-                    staking: address
-                }).then(data => {
-                    let earners = data.data.earners
-
-                    let web3Liquidity = configureWeb3("https://bsc-dataseed.binance.org/")
-                    let stakingContractLiquidity = new web3Liquidity.eth.Contract(stakingAbi, address)
-
-                    for (let i = 0; i < earners.length; i++) {
-                        stakingContractLiquidity.methods.earned(earners[i]).call()
-                            .then(function(earned) {
-                                axios.post(`${ownlyAPI}api/update-staking-earnings`, {
-                                    staking: address,
-                                    address: earners[i],
-                                    earned: earned
-                                }).then(data => {
-
-                                }).catch(function(error) {
-                                    console.log(error)
-                                })
-                            })
-                    }
-                }).catch(function(error) {
-                    console.log(error)
-                })
-
-                if (data.data.data.pagination.has_more) {
-                    setTimeout(function() {
-                        getLiquidityStakingData(address, page++)
-                    }, 5000)
-                }
-            }
-        })
-    }
 
     // account change listener (metamask only)
     const accountChangedListener = () => {
@@ -506,50 +445,55 @@ function OWN_Mustachio() {
                 <section id="app-staking" className="mb-4">
                     <div className="row justify-content-center align-items-center">
                         <div className="col-12 col-lg-5">
-                            <p className="text-center font-size-170 text-color-3 neo-bold mb-1">Get OWN/BUSD LP Tokens</p>
-                            <p className="text-center font-size-90 text-color-6 neo-light mb-4">Add liquidity to OWN/BUSD on <b>PancakeSwap</b></p>
-                            <p className="total-dep bg-color-21 text-white text-center font-size-90 neo-light mb-4"><b>YOUR BALANCE:</b> {addCommasToNumber(state.currentLPBalance)} OWN/BUSD</p>
-                            <div className="d-flex justify-content-center mb-3">
-                                <div className="mx-1" style={{"width": "70px"}}>
-                                    <img src={ownlyLogo} className="w-100" alt="Ownly Logo" />
-                                </div>
-                                <div className="mx-1" style={{"width": "70px"}}>
-                                    <img src={busdLogo} className="w-100" alt="BUSD Logo" />
-                                </div>
+                            <div className="splatform-item-img">
+                                <img className="w-100" src={ownMustachio} alt="Stake OWN, Earn Mustachio Ruler" />
                             </div>
+                            <p className="splatform-item-title text-center font-size-170 text-color-3 neo-black mb-3">Stake OWN, Earn Mustachio Marauders</p>
+                            <p className="total-dep bg-color-21 text-white text-center font-size-90 neo-light mb-5"><b>YOUR BALANCE:</b> {addCommasToNumber(state.currentLPBalance)} OWN</p>
+
+                            <p className="font-size-130 text-color-2 neo-bold mb-3">Rules:</p>
+                            <ul>
+                                <li className="font-size-110 text-color-6 mb-3">
+                                    <p className="neo-light">Stake 15 Million OWN <b>without unstaking</b> for <b>60 Days</b> to earn 1 Mustachio Marauder NFT.</p>
+                                </li>
+                                <li className="font-size-110 text-color-6 mb-3">
+                                    <p className="neo-light">After <b>60 days</b> of staking without unstaking your OWN tokens, you can now earn 1 Mustachio Marauder NFT and withdraw your OWN tokens back to your wallet.</p>
+                                    <p className="neo-light"><b>Note:</b> 1 address per staking only.</p>
+                                </li>
+                                <li className="font-size-110 text-color-6 mb-3">
+                                    <p className="neo-light">Staking is available until the <b>200 Mustachio Marauders</b> runs out.</p>
+                                </li>
+                            </ul>
                             <div className="add-liquidity mx-auto" style={{"width": "60%"}}>
-                                <a href="https://pancakeswap.finance/add/0x7665CB7b0d01Df1c9f9B9cC66019F00aBD6959bA/0xe9e7CEA3DedcA5984780Bafc599bD69ADd087D56" target="_blank" rel="noreferrer" className="w-100 btn btn-custom-7 rounded-lg mb-2">ADD LIQUIDITY FOR OWN/BUSD</a>
-                                <p className="font-size-90 text-color-6 neo-light mt-3 mb-4">
+                                <a href="https://ownly.io/pancake" target="_blank" rel="noreferrer" className="w-100 btn btn-custom-7 rounded-lg mb-2">GET YOUR OWN TOKENS</a>
+                                {/* <p className="font-size-90 text-color-6 neo-light mt-3 mb-4">
                                     <a href="https://pancakeswap.finance/info/pool/0x5b14378d1bab6bf323ebd6cfd4a26ec2c49598da" target="_blank" rel="noreferrer" className="stake-link">
                                         <b>See Pair Info</b>
                                         &nbsp;<FontAwesomeIcon size="sm" icon={faExternalLinkAlt} />
                                     </a>
-                                </p>
+                                </p> */}
                             </div>
                         </div>
                         <div className="col-12 col-lg-7">
                             <hr className="my-5 d-block d-lg-none" />
 
-                            <p className="text-center font-size-170 text-color-2 neo-bold mb-1">Stake OWN/BUSD LP Tokens</p>
-                            <p className="text-center font-size-90 text-color-6 neo-light mb-3">Stake your <b>CAKE LP Tokens</b> and receive <b>OWN</b></p>
-                            <p className="total-dep bg-color-21 text-white text-center font-size-110 neo-light mb-3"><b>TOTAL DEPOSITS:</b> {addCommasToNumber(state.totalLPTokensStaked)} OWN/BUSD</p>
+                            <p className="text-center font-size-170 text-color-2 neo-bold mb-1">Stake Your OWN Tokens Here</p>
+                            <p className="text-center font-size-90 text-color-6 neo-light mb-3">Stake your <b>OWN Tokens</b> and receive <b>1 Mustachio Marauder</b></p>
+                            <p className="total-dep bg-color-21 text-white text-center font-size-110 neo-light mb-3"><b>TOTAL DEPOSITS:</b> {addCommasToNumber(state.totalLPTokensStaked)} OWN</p>
 
-                            <p className="font-size-90 text-center text-color-6 neo-light mb-4">
+                            {/* <p className="font-size-90 text-center text-color-6 neo-light mb-4">
                                 <a onClick={handleShowTopStakers} className="stake-link cursor-pointer">
                                     <b>VIEW STAKERS' LEADERBOARD</b>
                                 </a>
-                            </p>
+                            </p> */}
 
                             <div className="staking-card mx-auto" style={{"width": "85%"}}>
                                 <div className="app-card">
                                     {/* STAKING FORM */}
                                     <form>
-                                        <p className="font-size-110 neo-light mb-1">Stake</p>
+                                        <p className="font-size-110 neo-light mb-1">Stake $OWN</p>
                                         <div className="form-group stake-form mb-3">
-                                            <input type="number" id="stake-input-num" className="form-control form-control-lg stake-input" placeholder="Amount" readOnly={state.isApproved} />
-                                            <small id="stake-help" className="form-text text-muted">{state.helpText}</small>
-
-                                            <button type="button" onClick={triggerMaxAmount} className="font-size-80 btn stake-btn neo-bold" disabled={!state.isConnected || state.isApproved}>MAX</button>
+                                            <input type="number" id="stake-input-num" className="form-control form-control-lg stake-input" readOnly="true" value="15000000" />
                                         </div>
                                         <div className="d-flex justify-content-between mb-1">
                                             { state.isConnected ? (
@@ -560,7 +504,7 @@ function OWN_Mustachio() {
                                             <button onClick={enterStaking} type="button" className="btn stake-btn-func btn-custom-2" disabled={!state.isApproved}>STAKE</button>
                                         </div>
                                         <div className="d-flex justify-content-between">
-                                            <button onClick={claimRewards} type="button" className="btn stake-btn-func btn-custom-2" disabled={!state.isLoaded}>CLAIM</button>
+                                            <button onClick={claimRewards} type="button" className="btn stake-btn-func btn-custom-2" disabled={!state.isLoaded}>UNSTAKE</button>
                                             <button onClick={claimAndWithdraw} type="button" className="btn stake-btn-func btn-custom-2" disabled={!state.isLoaded}>CLAIM & WITHDRAW</button>
                                         </div>
                                     </form>
@@ -571,7 +515,7 @@ function OWN_Mustachio() {
                                     {/* DETAILS */}
                                     <div className="d-none d-sm-block">
                                         <div className="d-flex justify-content-between">
-                                            <p className="mb-3 neo-bold font-size-90">Your Total LP Tokens Staked</p>
+                                            <p className="mb-3 neo-bold font-size-90">Stake Required</p>
                                             { state.isConnected ? (
                                                 <p className="mb-3 neo-regular font-size-90">{addCommasToNumber(state.userCurrentLPStaked, 5)} OWN/BUSD</p>
                                             ) : (
@@ -579,7 +523,7 @@ function OWN_Mustachio() {
                                             )}
                                         </div>
                                         <div className="d-flex justify-content-between">
-                                            <p className="mb-3 neo-bold font-size-90">Rewards Earned</p>
+                                            <p className="mb-3 neo-bold font-size-90">Remaining Rewards</p>
                                             { state.isConnected ? (
                                                 <p className="mb-3 neo-regular font-size-90">{addCommasToNumber(state.userRewardsEarned, 5)} OWN</p>
                                             ) : (
@@ -587,7 +531,7 @@ function OWN_Mustachio() {
                                             )}
                                         </div>
                                         <div className="d-flex justify-content-between">
-                                            <p className="mb-3 neo-bold font-size-90">Your Rate</p>
+                                            <p className="mb-3 neo-bold font-size-90">Your Deposit</p>
                                             { state.isConnected ? (
                                                 <p className="mb-3 neo-regular font-size-90">{addCommasToNumber(state.userRate, 5)} OWN / week</p>
                                             ) : (
@@ -595,21 +539,17 @@ function OWN_Mustachio() {
                                             )}
                                         </div>
                                         <div className="d-flex justify-content-between">
-                                            <p className="mb-3 neo-bold font-size-90">APR</p>
+                                            <p className="mb-3 neo-bold font-size-90">Date Staked</p>
                                             <p className="mb-3 neo-regular font-size-90">{state.apr} %</p>
                                         </div>
                                         <div className="d-flex justify-content-between">
-                                            <p className="mb-3 neo-bold font-size-90">Total Rewards</p>
+                                            <p className="mb-3 neo-bold font-size-90">Duration</p>
                                             <p className="mb-3 neo-regular font-size-90">120,000,000 OWN</p>
-                                        </div>
-                                        <div className="d-flex justify-content-between">
-                                            <p className="mb-0 neo-bold font-size-90">Duration</p>
-                                            <p className="mb-0 neo-regular font-size-90">120 Days ({state.lpStakingDuration} remaining)</p>
                                         </div>
                                     </div>
                                     <div className="d-block d-sm-none">
                                         <div className="mb-3">
-                                            <p className="mb-1 neo-bold font-size-110">Your Total LP Tokens Staked</p>
+                                            <p className="mb-1 neo-bold font-size-110">Stake Required</p>
                                             { state.isConnected ? (
                                                 <p className="mb-1 neo-regular font-size-90">{addCommasToNumber(state.userCurrentLPStaked, 5)} OWN/BUSD</p>
                                             ) : (
@@ -617,7 +557,7 @@ function OWN_Mustachio() {
                                             )}
                                         </div>
                                         <div className="mb-3">
-                                            <p className="mb-1 neo-bold font-size-110">Rewards Earned</p>
+                                            <p className="mb-1 neo-bold font-size-110">Remaining Rewards</p>
                                             { state.isConnected ? (
                                                 <p className="mb-1 neo-regular font-size-90">{addCommasToNumber(state.userRewardsEarned, 5)} OWN</p>
                                             ) : (
@@ -625,7 +565,7 @@ function OWN_Mustachio() {
                                             )}
                                         </div>
                                         <div className="mb-3">
-                                            <p className="mb-1 neo-bold font-size-110">Your Rate</p>
+                                            <p className="mb-1 neo-bold font-size-110">Your Deposit</p>
                                             { state.isConnected ? (
                                                 <p className="mb-1 neo-regular font-size-90">{addCommasToNumber(state.userRate, 5)} OWN / week</p>
                                             ) : (
@@ -633,12 +573,8 @@ function OWN_Mustachio() {
                                             )}
                                         </div>
                                         <div className="mb-3">
-                                            <p className="mb-1 neo-bold font-size-110">APR</p>
+                                            <p className="mb-1 neo-bold font-size-110">Date Staked</p>
                                             <p className="mb-1 neo-regular font-size-90">{state.apr} %</p>
-                                        </div>
-                                        <div className="mb-3">
-                                            <p className="mb-1 neo-bold font-size-110">Total Rewards</p>
-                                            <p className="mb-1 neo-regular font-size-90">120,000,000 OWN</p>
                                         </div>
                                         <div>
                                             <p className="mb-1 neo-bold font-size-110">Duration</p>
@@ -670,8 +606,6 @@ function OWN_Mustachio() {
                     </div>
                 </section>
             </div>
-
-            <Footer />
 
             {/* Modals */}
             {/* Modal for not connected */}
@@ -743,7 +677,7 @@ function OWN_Mustachio() {
                     <div className="text-center mb-3">
                         <FontAwesomeIcon color="green" size="6x" icon={faCheckCircle} />
                     </div>
-                    <p className="app-success-modal-content text-center font-andes text-lg">Your LP tokens are staked successfully.</p>
+                    <p className="app-success-modal-content text-center font-andes text-lg">Your OWN tokens are staked successfully.</p>
                 </Modal.Body>
                 <Modal.Footer className="justify-content-center">
                     <Button className="font-w-hermann w-hermann-reg" variant="secondary" onClick={handleCloseStaked}>
@@ -779,7 +713,7 @@ function OWN_Mustachio() {
                     <div className="text-center mb-3">
                         <FontAwesomeIcon color="green" size="6x" icon={faCheckCircle} />
                     </div>
-                    <p className="app-success-modal-content text-center font-andes text-lg">You have successfully withdrawn your staked LP Tokens and reward tokens.</p>
+                    <p className="app-success-modal-content text-center font-andes text-lg">You have successfully withdrawn your staked OWN Tokens and reward tokens.</p>
                 </Modal.Body>
                 <Modal.Footer className="justify-content-center">
                     <Button className="font-w-hermann w-hermann-reg" variant="secondary" onClick={handleCloseExit}>
@@ -851,7 +785,7 @@ function OWN_Mustachio() {
             </Modal>     
 
             {/* Modal for stakers leaderboard */}
-            <Modal show={showTopStakers} onHide={handleCloseTopStakers} backdrop="static" keyboard={false} size="lg" centered>
+            {/* <Modal show={showTopStakers} onHide={handleCloseTopStakers} backdrop="static" keyboard={false} size="lg" centered>
                 <Modal.Body>
                     <TopStakers shortenAddress={shortenAddress} addCommasToNumber={addCommasToNumber} />
                 </Modal.Body>
@@ -860,7 +794,7 @@ function OWN_Mustachio() {
                         Close
                     </Button>
                 </Modal.Footer>
-            </Modal>     
+            </Modal>      */}
 
             {/* End Modals */}
         </div>

@@ -6,7 +6,6 @@ import { faCheckCircle, faExclamationCircle, faExternalLinkAlt, faSpinner } from
 import axios from 'axios'
 
 import Navbar from '../../Navbar/Navbar'
-import Footer from '../../Footer/Footer'
 import TopStakers from '../../TopStakers/TopStakers'
 
 import ownlyLogo from '../../../img/ownly/own-token.webp'
@@ -670,8 +669,6 @@ function CakeLP_OWN() {
                     </div>
                 </section>
             </div>
-
-            <Footer />
 
             {/* Modals */}
             {/* Modal for not connected */}
