@@ -34,6 +34,7 @@ function OWN_Mustachio() {
         isConnected: false,
         account: "",
         currentOwnBalance: 0,
+        helpText: "",
         isApproved: false,
         detectedChangeMessage: "",
         hasMetamask: false,
@@ -172,13 +173,14 @@ function OWN_Mustachio() {
     // function that will get the details of the user's account (balances, staked tokens etc)
     const getDetailsOfUserAcct = async acct  => {
         const currentItem = await _nftStakingContract.methods.getCurrentStakingItem(acct, nftTokenAddress).call()
+        console.log(currentItem.startTime)
         if (Number(currentItem.startTime) !== 0) {
             const options = {year: 'numeric', month: 'long', day: 'numeric'}
             _setState("dateStaked", new Date(currentItem.startTime * 1000).toLocaleDateString("en-US", options))
         }
 
         if (Number(currentItem.amount) !== 0) {
-            _setState("userOwnDeposits", web3.utils.fromWei(currentItem.amount))
+            _setState("userOwnDeposits", _web3.utils.fromWei(currentItem.amount))
         }
 
         // get OWN balance
@@ -191,8 +193,10 @@ function OWN_Mustachio() {
         _setState("nftStakingDuration", calculatedDuration)
 
         if (Number(currentItem.startTime) !== 0) {
-            const remainingDuration = Number(currentItem.startTime) + calculatedDuration
+            const remainingDuration = Number(currentItem.startTime) + Number(duration)
+            console.log(remainingDuration)
             const calculatedRemaining = await convertTimestamp(remainingDuration)
+            console.log(calculatedRemaining)
             _setState("userRemainingDuration", calculatedRemaining)
         }
 
@@ -277,72 +281,73 @@ function OWN_Mustachio() {
     }
 
     // approve
-    // const approveStaking = async () => {
-    //     const approveAmountEth = getStakeAmount()
+    const approveStaking = async () => {
+        const approveAmountEth = getStakeAmount()
 
-    //     if (approveAmountEth === "0" || approveAmountEth === 0 || approveAmountEth === "") {
-    //         handleShowOnError()
-    //         _setState("txError", "Please provide a valid amount!")
-    //     } else {
-    //         const approveAmount = _web3.utils.toWei(approveAmountEth)
+        if (approveAmountEth === "0" || approveAmountEth === 0 || approveAmountEth === "") {
+            handleShowOnError()
+            _setState("txError", "Please provide a valid amount!")
+        } else {
+            if (state.userOwnDeposits !== 0) {
+                handleShowOnError()
+                _setState("txError", "Cannot restake again. You can unstake and try again, or wait for the duration to finish and restake again.")
+            } else {
+                const approveAmount = _web3.utils.toWei(approveAmountEth)
         
-    //         await _stakingTokenContract.methods.approve(stakingAddress, approveAmount).send({
-    //             from: state.account
-    //         })
-    //         .on('transactionHash', function(hash){
-    //             handleShowPleaseWait()
-    //         })
-    //         .on('error', function(error) {
-    //             handleClosePleaseWait()
-    //             handleShowOnError()
-    //             _setState("isApproved", false)
-    //             _setState("txError", error.message)
-    //         })
-    //         .then(async function(receipt) {
-    //             handleClosePleaseWait()
-    //             handleShowOnApprove()
-    //             _setState("isApproved", true)
-    //             _setState("txHash", receipt.transactionHash)
-    //             _setState("stakedAmount", approveAmountEth)
-    //             _setState("helpText", `${approveAmountEth} OWN/BUSD ready for staking.`)
-    //         })
-    //     }
-    // }
+                await _stakingTokenContract.methods.approve(nftStakingAddress, approveAmount).send({
+                    from: state.account
+                })
+                .on('transactionHash', function(hash){
+                    handleShowPleaseWait()
+                })
+                .on('error', function(error) {
+                    handleClosePleaseWait()
+                    handleShowOnError()
+                    _setState("isApproved", false)
+                    _setState("txError", error.message)
+                })
+                .then(async function(receipt) {
+                    handleClosePleaseWait()
+                    handleShowOnApprove()
+                    _setState("isApproved", true)
+                    _setState("txHash", receipt.transactionHash)
+                    _setState("stakedAmount", approveAmountEth)
+                    _setState("helpText", `${addCommasToNumber(approveAmountEth)} OWN ready for staking.`)
+                })
+            }
+        }
+    }
 
     // stake
-    // const enterStaking = async () => {
-    //     const stakeAmountEth = state.stakedAmount
+    const enterStaking = async () => {
+        const stakeAmountEth = state.stakedAmount
 
-    //     if (stakeAmountEth === "0" || stakeAmountEth === 0) {
-    //         handleShowOnError()
-    //         _setState("txError", "Please provide a valid amount!")
-    //     } else {
-    //         const stakeAmount = _web3.utils.toWei(stakeAmountEth)
+        if (stakeAmountEth === "0" || stakeAmountEth === 0) {
+            handleShowOnError()
+            _setState("txError", "Please provide a valid amount!")
+        } else {
+            const stakeAmount = _web3.utils.toWei(stakeAmountEth)
             
-    //         await _stakingContract.methods.stake(stakeAmount).send({
-    //             from: state.account
-    //         })
-    //         .on('transactionHash', function(hash){
-    //             handleShowPleaseWait()
-    //         })
-    //         .on('error', function(error) {
-    //             handleClosePleaseWait()
-    //             handleShowOnError()
-    //             _setState("txError", error.message)
-    //         })
-    //         .then(async function(receipt) {
-    //             handleClosePleaseWait()
-    //             handleShowStaked()
-    //             _setState("txHash", receipt.transactionHash)
-    //             _setState("helpText", `${3} OWN/BUSD successfully staked.`)
-    //             updateDetails()
-
-    //             // reset values
-    //             document.getElementById("stake-input-num").value = 0
-    //             _setState("stakedAmount", 0)
-    //         })
-    //     }
-    // }
+            await _nftStakingContract.methods.stake(nftTokenAddress, stakeAmount).send({
+                from: state.account
+            })
+            .on('transactionHash', function(hash){
+                handleShowPleaseWait()
+            })
+            .on('error', function(error) {
+                handleClosePleaseWait()
+                handleShowOnError()
+                _setState("txError", error.message)
+            })
+            .then(async function(receipt) {
+                handleClosePleaseWait()
+                handleShowStaked()
+                _setState("txHash", receipt.transactionHash)
+                _setState("helpText", `${3} OWN successfully staked.`)
+                updateDetails()
+            })
+        }
+    }
 
     // claim
     // const claimRewards = async () => {
@@ -509,8 +514,9 @@ function OWN_Mustachio() {
                                         <p className="font-size-110 neo-light mb-1">Stake $OWN</p>
                                         <div className="form-group stake-form mb-3">
                                             <input type="number" id="stake-input-num" className="form-control form-control-lg stake-input" readOnly="true" value={state.stakeRequired} />
+                                            <small id="stake-help" className="form-text text-muted">{state.helpText}</small>
                                         </div>
-                                        {/* <div className="d-flex justify-content-between mb-1">
+                                        <div className="d-flex justify-content-between mb-1">
                                             { state.isConnected ? (
                                                 <button onClick={approveStaking} type="button" className="btn stake-btn-func btn-custom-2" disabled={state.isApproved}>APPROVE</button>
                                             ) : (
@@ -518,9 +524,9 @@ function OWN_Mustachio() {
                                             )}
                                             <button onClick={enterStaking} type="button" className="btn stake-btn-func btn-custom-2" disabled={!state.isApproved}>STAKE</button>
                                         </div>
-                                        <div className="d-flex justify-content-between">
+                                        {/* <div className="d-flex justify-content-between">
                                             <button onClick={claimRewards} type="button" className="btn stake-btn-func btn-custom-2" disabled={!state.isLoaded}>UNSTAKE</button>
-                                            <button onClick={claimAndWithdraw} type="button" className="btn stake-btn-func btn-custom-2" disabled={!state.isLoaded}>CLAIM & WITHDRAW</button>
+                                            <button onClick={claimAndWithdraw} type="button" className="btn stake-btn-func btn-custom-2" disabled={!state.isLoaded}>MINT</button>
                                         </div> */}
                                     </form>
                                     {/* END STAKING FORM */}
