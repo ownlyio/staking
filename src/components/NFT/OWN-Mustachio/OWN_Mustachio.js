@@ -446,9 +446,9 @@ function OWN_Mustachio() {
                     <div className="row justify-content-center align-items-center">
                         <div className="col-12 col-lg-5">
                             <div className="splatform-item-img">
-                                <img className="w-100" src={ownMustachio} alt="Stake OWN, Earn Mustachio Ruler" />
+                                <img className="w-100" src={ownMustachio} alt="Stake OWN, Earn Mustachio Marauder" />
                             </div>
-                            <p className="splatform-item-title text-center font-size-170 text-color-3 neo-black mb-3">Stake OWN, Earn Mustachio Marauders</p>
+                            <p className="splatform-item-title text-center font-size-170 text-color-3 neo-black mb-3">Stake OWN, Earn Mustachio Marauder</p>
                             <p className="total-dep bg-color-21 text-white text-center font-size-90 neo-light mb-5"><b>YOUR BALANCE:</b> {addCommasToNumber(state.currentLPBalance)} OWN</p>
 
                             <p className="font-size-130 text-color-2 neo-bold mb-3">Rules:</p>

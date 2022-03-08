@@ -152,7 +152,7 @@ function ItemOWNMustachio(props) {
                 <div className="splatform-item-img">
                     <img className="w-100" src={ownMustachio} alt="Stake OWN, Earn Mustachio Ruler" />
                 </div>
-                <p className="splatform-item-title text-center neo-bold text-color-6 font-size-170">Stake OWN, Earn Mustachio Marauders</p>
+                <p className="splatform-item-title text-center neo-bold text-color-6 font-size-170">Stake OWN, Earn Mustachio Marauder</p>
                 <div className="splatform-item-divider my-3"></div>
                 <div className="splatform-item-content">
                     <div className="d-flex justify-content-between mb-3">
