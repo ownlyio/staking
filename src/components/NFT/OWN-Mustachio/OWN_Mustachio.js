@@ -15,8 +15,9 @@ import ownMustachio from '../../../img/staking/own-mustachio-rulers.png'
 // import { stakingAbi, stakingAddress } from '../../../utils/contracts/liquidity/cakelp-own/staking'
 
 // DEVELOPMENT
-import { stakingTokenAbi, stakingTokenAddress } from '../../../utils/contracts/liquidity/cakelp-own/stakingTokenDev'
-import { stakingAbi, stakingAddress } from '../../../utils/contracts/liquidity/cakelp-own/stakingDev'
+import { nftStakingAbi, nftStakingAddress } from '../../../utils/contracts/nft/own-mustachio/nftStakingDev'
+import { nftTokenAbi, nftTokenAddress } from '../../../utils/contracts/nft/own-mustachio/nftTokenDev'
+import { stakingTokenAbi, stakingTokenAddress } from '../../../utils/contracts/nft/own-mustachio/stakingTokenDev'
 
 // Utils
 import { configureWeb3 } from '../../../utils/web3Init'
@@ -24,26 +25,26 @@ import { getApr } from '../../../utils/apr'
 import networks from '../../../utils/networks'
 
 function OWN_Mustachio() {
-    let web3, stakingContract
+    let web3, nftStakingContract, nftTokenContract
     const [_web3, setWeb3] = useState()
-    const [_stakingContract, setStakingContract] = useState()
+    const [_nftStakingContract, setNftStakingContract] = useState()
+    const [_nftTokenContract, setNftTokenContract] = useState()
     const [_stakingTokenContract, setStakingTokenContract] = useState()
     const [state, setState] = useState({
         isConnected: false,
         account: "",
-        helpText: "Please enter an amount greater than 0.",
-        currentLPBalance: 0,
+        currentOwnBalance: 0,
         isApproved: false,
         detectedChangeMessage: "",
         hasMetamask: false,
         isLoaded: false,
-        stakedAmount: 0,
-        apr: "--",
-        totalLPTokensStaked: 0,
-        lpStakingDuration: 0,
-        userCurrentLPStaked: 0,
-        userRewardsEarned: 0,
-        userRate: 0,
+        totalOwnTokensStaked: 0,
+        stakeRequired: 0,
+        remainingRewards: 0,
+        userOwnDeposits: 0,
+        dateStaked: "--",
+        nftStakingDuration: 0,
+        userRemainingDuration: 0,
         txError: "",
         txHash: "",
     })
@@ -97,119 +98,130 @@ function OWN_Mustachio() {
             web3 = configureWeb3("https://data-seed-prebsc-1-s1.binance.org:8545/")
 
             // RPC Initialize
-            stakingContract = new web3.eth.Contract(stakingAbi, stakingAddress)
+            nftStakingContract = new web3.eth.Contract(nftStakingAbi, nftStakingAddress)
+            nftTokenContract = new web3.eth.Contract(nftTokenAbi, nftTokenAddress)
 
-            // Metamask
+            // get total deposits
+            const totalStaked = await nftStakingContract.methods.totalDeposits(nftTokenAddress).call()
+            _setState("totalOwnTokensStaked", web3.utils.fromWei(totalStaked))
+
+            // get remaining rewards
+            const remainingRewards = await nftStakingContract.methods.remainingRewards(nftTokenAddress).call()
+            _setState("remainingRewards", remainingRewards)
+
+            // get staking required
+            const stakeRequired = await nftTokenContract.methods.getStakeRequired().call()
+            _setState("stakeRequired", web3.utils.fromWei(stakeRequired))
+            
+            // // Metamask account init
             const web3Metamask = configureWeb3()
 
             if (web3Metamask !== 1) { 
-                const stakingContractMetamask = new web3Metamask.eth.Contract(stakingAbi, stakingAddress)
+                const nftStakingContractMetamask = new web3Metamask.eth.Contract(nftStakingAbi, nftStakingAddress)
+                const nftTokenContractMetamask = new web3Metamask.eth.Contract(nftTokenAbi, nftTokenAddress)
                 const stakingTokenContractMetamask = new web3Metamask.eth.Contract(stakingTokenAbi, stakingTokenAddress)
                 setWeb3(web3Metamask)
-                setStakingContract(stakingContractMetamask)
+                setNftStakingContract(nftStakingContractMetamask)
+                setNftTokenContract(nftTokenContractMetamask)
                 setStakingTokenContract(stakingTokenContractMetamask)
                 _setState("hasMetamask", true)
             } else {
                 _setState("hasMetamask", false)
             }
-
-            // get staking duration
-            const duration = await stakingContract.methods.periodFinish().call()
-            const calculatedDuration = await convertTimestamp(duration)
-            _setState("lpStakingDuration", calculatedDuration)
-    
-            // get total deposits
-            const totalLP = await stakingContract.methods.totalSupply().call()
-            _setState("totalLPTokensStaked", web3.utils.fromWei(totalLP))
-
-            // APR
-            const apr = await getApr()
-            _setState("apr", roundOff(apr))
         }
         
         _init()
-        accountChangedListener()
-        networkChangedListener()
+        // accountChangedListener()
+        // networkChangedListener()
     }, [])
 
     // account change listener (metamask only)
-    const accountChangedListener = () => {
-        if (window.ethereum) {
-            window.ethereum.on('accountsChanged', (accounts) => {
-                _setState("detectedChangeMessage", "Account change detected!")
-                handleShowDetected()
-            })
-        }
-    }
+    // const accountChangedListener = () => {
+    //     if (window.ethereum) {
+    //         window.ethereum.on('accountsChanged', (accounts) => {
+    //             _setState("detectedChangeMessage", "Account change detected!")
+    //             handleShowDetected()
+    //         })
+    //     }
+    // }
 
-    // network change listener (metamask only)
-    const networkChangedListener = () => {
-        if (window.ethereum) {
-            window.ethereum.on('chainChanged', (chainId) => {
-                // PRODUCTION
-                // if (chainId !== "0x38") {
-                // DEVELOPMENT
-                if (chainId !== "0x61") { 
-                    _setState("detectedChangeMessage", "Network change detected!")
-                    handleShowDetected()
-                }
-            })
-        }
-    }
+    // // network change listener (metamask only)
+    // const networkChangedListener = () => {
+    //     if (window.ethereum) {
+    //         window.ethereum.on('chainChanged', (chainId) => {
+    //             // PRODUCTION
+    //             // if (chainId !== "0x38") {
+    //             // DEVELOPMENT
+    //             if (chainId !== "0x61") { 
+    //                 _setState("detectedChangeMessage", "Network change detected!")
+    //                 handleShowDetected()
+    //             }
+    //         })
+    //     }
+    // }
 
     // function that will automatically update the details after approve, stake, claim and exit
     const updateDetails = async () => {
         // get total deposits
-        const totalLP = await _stakingContract.methods.totalSupply().call()
-        _setState("totalLPTokensStaked", _web3.utils.fromWei(totalLP))
-        const apr = await getApr()
-        _setState("apr", roundOff(apr))
+        const totalStaked = await _nftStakingContract.methods.totalDeposits(nftTokenAddress).call()
+        _setState("totalOwnTokensStaked", _web3.utils.fromWei(totalStaked))
+
         getDetailsOfUserAcct(state.account)
     }
 
     // function that will get the details of the user's account (balances, staked tokens etc)
     const getDetailsOfUserAcct = async acct  => {
-        // compute user rate
-        function computeUserRate(totalLp, lpStaked) {
-            const ownRewardPerWeek = 7000000
-            let rate = (ownRewardPerWeek * _web3.utils.fromWei(lpStaked)) / _web3.utils.fromWei(totalLp)
-            _setState("userRate", rate)
+        const currentItem = await _nftStakingContract.methods.getCurrentStakingItem(acct, nftTokenAddress).call()
+        if (Number(currentItem.startTime) !== 0) {
+            const options = {year: 'numeric', month: 'long', day: 'numeric'}
+            _setState("dateStaked", new Date(currentItem.startTime * 1000).toLocaleDateString("en-US", options))
         }
 
-        const lpTokenBal = await _stakingTokenContract.methods.balanceOf(acct).call()
-        _setState("currentLPBalance", _web3.utils.fromWei(lpTokenBal))
-        const lpTokenStaked = await _stakingContract.methods.balanceOf(acct).call()
-        _setState("userCurrentLPStaked", _web3.utils.fromWei(lpTokenStaked))
-        const rewardsEarned = await _stakingContract.methods.earned(acct).call()
-        _setState("userRewardsEarned", _web3.utils.fromWei(rewardsEarned))
-        computeUserRate(_web3.utils.toWei(state.totalLPTokensStaked), lpTokenStaked)
+        if (Number(currentItem.amount) !== 0) {
+            _setState("userOwnDeposits", web3.utils.fromWei(currentItem.amount))
+        }
+
+        // get OWN balance
+        const ownBalance = await _stakingTokenContract.methods.balanceOf(acct).call()
+        _setState("currentOwnBalance", _web3.utils.fromWei(ownBalance))
+
+        // get staking duration
+        const duration = await _nftTokenContract.methods.getStakeDuration().call()
+        const calculatedDuration = convertSecToDays(duration)
+        _setState("nftStakingDuration", calculatedDuration)
+
+        if (Number(currentItem.startTime) !== 0) {
+            const remainingDuration = Number(currentItem.startTime) + calculatedDuration
+            const calculatedRemaining = await convertTimestamp(remainingDuration)
+            _setState("userRemainingDuration", calculatedRemaining)
+        }
 
         _setState("isLoaded", true)
         
         // refresh data every 10 seconds
-        setInterval(() => {
-            async function _getDetails() {
-                // get total deposits
-                const totalLP = await _stakingContract.methods.totalSupply().call()
-                _setState("totalLPTokensStaked", _web3.utils.fromWei(totalLP))
+        // setInterval(() => {
+        //     async function _getDetails() {
+        //         // get total deposits
+        //         const totalLP = await _stakingContract.methods.totalSupply().call()
+        //         _setState("totalLPTokensStaked", _web3.utils.fromWei(totalLP))
 
-                // APR
-                const apr = await getApr()
-                _setState("apr", roundOff(apr))
+        //         // APR
+        //         const apr = await getApr()
+        //         _setState("apr", roundOff(apr))
 
-                const lpTokenBal = await _stakingTokenContract.methods.balanceOf(acct).call()
-                _setState("currentLPBalance", _web3.utils.fromWei(lpTokenBal))
-                const lpTokenStaked = await _stakingContract.methods.balanceOf(acct).call()
-                _setState("userCurrentLPStaked", _web3.utils.fromWei(lpTokenStaked))
-                const rewardsEarned = await _stakingContract.methods.earned(acct).call()
-                _setState("userRewardsEarned", _web3.utils.fromWei(rewardsEarned))
+        //         const lpTokenBal = await _stakingTokenContract.methods.balanceOf(acct).call()
+        //         _setState("currentLPBalance", _web3.utils.fromWei(lpTokenBal))
+        //         const lpTokenStaked = await _stakingContract.methods.balanceOf(acct).call()
+        //         _setState("userCurrentLPStaked", _web3.utils.fromWei(lpTokenStaked))
+        //         const rewardsEarned = await _stakingContract.methods.earned(acct).call()
+        //         _setState("userRewardsEarned", _web3.utils.fromWei(rewardsEarned))
 
-                // compute user rate
-                computeUserRate(totalLP, lpTokenStaked)
-            }
+        //         // compute user rate
+        //         computeUserRate(totalLP, lpTokenStaked)
+        //     }
             
-            _getDetails()
-        }, 10000)
+        //     _getDetails()
+        // }, 10000)
     }
 
     // switch network      
@@ -265,132 +277,140 @@ function OWN_Mustachio() {
     }
 
     // approve
-    const approveStaking = async () => {
-        const approveAmountEth = getStakeAmount()
+    // const approveStaking = async () => {
+    //     const approveAmountEth = getStakeAmount()
 
-        if (approveAmountEth === "0" || approveAmountEth === 0 || approveAmountEth === "") {
-            handleShowOnError()
-            _setState("txError", "Please provide a valid amount!")
-        } else {
-            const approveAmount = _web3.utils.toWei(approveAmountEth)
+    //     if (approveAmountEth === "0" || approveAmountEth === 0 || approveAmountEth === "") {
+    //         handleShowOnError()
+    //         _setState("txError", "Please provide a valid amount!")
+    //     } else {
+    //         const approveAmount = _web3.utils.toWei(approveAmountEth)
         
-            await _stakingTokenContract.methods.approve(stakingAddress, approveAmount).send({
-                from: state.account
-            })
-            .on('transactionHash', function(hash){
-                handleShowPleaseWait()
-            })
-            .on('error', function(error) {
-                handleClosePleaseWait()
-                handleShowOnError()
-                _setState("isApproved", false)
-                _setState("txError", error.message)
-            })
-            .then(async function(receipt) {
-                handleClosePleaseWait()
-                handleShowOnApprove()
-                _setState("isApproved", true)
-                _setState("txHash", receipt.transactionHash)
-                _setState("stakedAmount", approveAmountEth)
-                _setState("helpText", `${approveAmountEth} OWN/BUSD ready for staking.`)
-            })
-        }
-    }
+    //         await _stakingTokenContract.methods.approve(stakingAddress, approveAmount).send({
+    //             from: state.account
+    //         })
+    //         .on('transactionHash', function(hash){
+    //             handleShowPleaseWait()
+    //         })
+    //         .on('error', function(error) {
+    //             handleClosePleaseWait()
+    //             handleShowOnError()
+    //             _setState("isApproved", false)
+    //             _setState("txError", error.message)
+    //         })
+    //         .then(async function(receipt) {
+    //             handleClosePleaseWait()
+    //             handleShowOnApprove()
+    //             _setState("isApproved", true)
+    //             _setState("txHash", receipt.transactionHash)
+    //             _setState("stakedAmount", approveAmountEth)
+    //             _setState("helpText", `${approveAmountEth} OWN/BUSD ready for staking.`)
+    //         })
+    //     }
+    // }
 
     // stake
-    const enterStaking = async () => {
-        const stakeAmountEth = state.stakedAmount
+    // const enterStaking = async () => {
+    //     const stakeAmountEth = state.stakedAmount
 
-        if (stakeAmountEth === "0" || stakeAmountEth === 0) {
-            handleShowOnError()
-            _setState("txError", "Please provide a valid amount!")
-        } else {
-            const stakeAmount = _web3.utils.toWei(stakeAmountEth)
+    //     if (stakeAmountEth === "0" || stakeAmountEth === 0) {
+    //         handleShowOnError()
+    //         _setState("txError", "Please provide a valid amount!")
+    //     } else {
+    //         const stakeAmount = _web3.utils.toWei(stakeAmountEth)
             
-            await _stakingContract.methods.stake(stakeAmount).send({
-                from: state.account
-            })
-            .on('transactionHash', function(hash){
-                handleShowPleaseWait()
-            })
-            .on('error', function(error) {
-                handleClosePleaseWait()
-                handleShowOnError()
-                _setState("txError", error.message)
-            })
-            .then(async function(receipt) {
-                handleClosePleaseWait()
-                handleShowStaked()
-                _setState("txHash", receipt.transactionHash)
-                _setState("helpText", `${3} OWN/BUSD successfully staked.`)
-                updateDetails()
+    //         await _stakingContract.methods.stake(stakeAmount).send({
+    //             from: state.account
+    //         })
+    //         .on('transactionHash', function(hash){
+    //             handleShowPleaseWait()
+    //         })
+    //         .on('error', function(error) {
+    //             handleClosePleaseWait()
+    //             handleShowOnError()
+    //             _setState("txError", error.message)
+    //         })
+    //         .then(async function(receipt) {
+    //             handleClosePleaseWait()
+    //             handleShowStaked()
+    //             _setState("txHash", receipt.transactionHash)
+    //             _setState("helpText", `${3} OWN/BUSD successfully staked.`)
+    //             updateDetails()
 
-                // reset values
-                document.getElementById("stake-input-num").value = 0
-                _setState("stakedAmount", 0)
-            })
-        }
-    }
+    //             // reset values
+    //             document.getElementById("stake-input-num").value = 0
+    //             _setState("stakedAmount", 0)
+    //         })
+    //     }
+    // }
 
     // claim
-    const claimRewards = async () => {
-        const rewards = state.userRewardsEarned
+    // const claimRewards = async () => {
+    //     const rewards = state.userRewardsEarned
 
-        if (rewards === "0" || rewards === 0) {
-            handleShowOnError()
-            _setState("txError", "You do not have any reward tokens to claim.")
-        } else {
-            await _stakingContract.methods.getReward().send({
-                from: state.account
-            })
-            .on('transactionHash', function(hash){
-                handleShowPleaseWait()
-            })
-            .on('error', function(error) {
-                handleClosePleaseWait()
-                handleShowOnError()
-                _setState("txError", error.message)
-            })
-            .then(async function(receipt) {
-                handleClosePleaseWait()
-                handleShowClaim()
-                _setState("txHash", receipt.transactionHash)
-                _setState("helpText", 'Please enter an amount greater than 0.')
-                updateDetails()
-            })
-        }
-    }
+    //     if (rewards === "0" || rewards === 0) {
+    //         handleShowOnError()
+    //         _setState("txError", "You do not have any reward tokens to claim.")
+    //     } else {
+    //         await _stakingContract.methods.getReward().send({
+    //             from: state.account
+    //         })
+    //         .on('transactionHash', function(hash){
+    //             handleShowPleaseWait()
+    //         })
+    //         .on('error', function(error) {
+    //             handleClosePleaseWait()
+    //             handleShowOnError()
+    //             _setState("txError", error.message)
+    //         })
+    //         .then(async function(receipt) {
+    //             handleClosePleaseWait()
+    //             handleShowClaim()
+    //             _setState("txHash", receipt.transactionHash)
+    //             _setState("helpText", 'Please enter an amount greater than 0.')
+    //             updateDetails()
+    //         })
+    //     }
+    // }
 
     // exit
-    const claimAndWithdraw = async () => {
-        const withdrawAmt = state.userCurrentLPStaked
+    // const claimAndWithdraw = async () => {
+    //     const withdrawAmt = state.userCurrentLPStaked
 
-        if (withdrawAmt === "0" || withdrawAmt === 0 ) {
-            handleShowOnError()
-            _setState("txError", "You do not have any LP Tokens staked.")
-        } else {
-            await _stakingContract.methods.exit().send({
-                from: state.account
-            })
-            .on('transactionHash', function(hash){
-                handleShowPleaseWait()
-            })
-            .on('error', function(error) {
-                handleClosePleaseWait()
-                handleShowOnError()
-                _setState("txError", error.message)
-            })
-            .then(async function(receipt) {
-                handleClosePleaseWait()
-                handleShowExit()
-                _setState("txHash", receipt.transactionHash)
-                _setState("helpText", 'Please enter an amount greater than 0.')
-                updateDetails()
-            })
-        }
-    }
+    //     if (withdrawAmt === "0" || withdrawAmt === 0 ) {
+    //         handleShowOnError()
+    //         _setState("txError", "You do not have any LP Tokens staked.")
+    //     } else {
+    //         await _stakingContract.methods.exit().send({
+    //             from: state.account
+    //         })
+    //         .on('transactionHash', function(hash){
+    //             handleShowPleaseWait()
+    //         })
+    //         .on('error', function(error) {
+    //             handleClosePleaseWait()
+    //             handleShowOnError()
+    //             _setState("txError", error.message)
+    //         })
+    //         .then(async function(receipt) {
+    //             handleClosePleaseWait()
+    //             handleShowExit()
+    //             _setState("txHash", receipt.transactionHash)
+    //             _setState("helpText", 'Please enter an amount greater than 0.')
+    //             updateDetails()
+    //         })
+    //     }
+    // }
 
     // Utility functions
+    // convert seconds to days
+    const convertSecToDays = secTime => {
+        // PRODUCTION
+        // return Math.floor(secTime / (3600*24))
+        // DEVELOPMENT
+        return secTime / (3600*24)
+    }
+
     // convert a timestamp to days
     const convertTimestamp = async unixTime => {
         const req = await axios.get(`https://ownly.tk/api/get-remaining-time-from-timestamp/${unixTime}`)
@@ -416,14 +436,9 @@ function OWN_Mustachio() {
     }
 
     // MAX function
-    const triggerMaxAmount = () => {
-        document.getElementById("stake-input-num").value = state.currentLPBalance
-    }
-
-    // round to the nearest hundredths
-    const roundOff = num => {
-        return +(Math.round(num + "e+2")  + "e-2");
-    }
+    // const triggerMaxAmount = () => {
+    //     document.getElementById("stake-input-num").value = state.currentLPBalance
+    // }
 
     // add thousands separator
     const addCommasToNumber = (x, decimal = 5) => {
@@ -449,7 +464,7 @@ function OWN_Mustachio() {
                                 <img className="w-100" src={ownMustachio} alt="Stake OWN, Earn Mustachio Marauder" />
                             </div>
                             <p className="splatform-item-title text-center font-size-170 text-color-3 neo-black mb-3">Stake OWN, Earn Mustachio Marauder</p>
-                            <p className="total-dep bg-color-21 text-white text-center font-size-90 neo-light mb-5"><b>YOUR BALANCE:</b> {addCommasToNumber(state.currentLPBalance)} OWN</p>
+                            <p className="total-dep bg-color-21 text-white text-center font-size-90 neo-light mb-5"><b>YOUR BALANCE:</b> {addCommasToNumber(state.currentOwnBalance)} OWN</p>
 
                             <p className="font-size-130 text-color-2 neo-bold mb-3">Rules:</p>
                             <ul>
@@ -479,7 +494,7 @@ function OWN_Mustachio() {
 
                             <p className="text-center font-size-170 text-color-2 neo-bold mb-1">Stake Your OWN Tokens Here</p>
                             <p className="text-center font-size-90 text-color-6 neo-light mb-3">Stake your <b>OWN Tokens</b> and receive <b>1 Mustachio Marauder</b></p>
-                            <p className="total-dep bg-color-21 text-white text-center font-size-110 neo-light mb-3"><b>TOTAL DEPOSITS:</b> {addCommasToNumber(state.totalLPTokensStaked)} OWN</p>
+                            <p className="total-dep bg-color-21 text-white text-center font-size-110 neo-light mb-3"><b>TOTAL DEPOSITS:</b> {addCommasToNumber(state.totalOwnTokensStaked)} OWN</p>
 
                             {/* <p className="font-size-90 text-center text-color-6 neo-light mb-4">
                                 <a onClick={handleShowTopStakers} className="stake-link cursor-pointer">
@@ -493,9 +508,9 @@ function OWN_Mustachio() {
                                     <form>
                                         <p className="font-size-110 neo-light mb-1">Stake $OWN</p>
                                         <div className="form-group stake-form mb-3">
-                                            <input type="number" id="stake-input-num" className="form-control form-control-lg stake-input" readOnly="true" value="15000000" />
+                                            <input type="number" id="stake-input-num" className="form-control form-control-lg stake-input" readOnly="true" value={state.stakeRequired} />
                                         </div>
-                                        <div className="d-flex justify-content-between mb-1">
+                                        {/* <div className="d-flex justify-content-between mb-1">
                                             { state.isConnected ? (
                                                 <button onClick={approveStaking} type="button" className="btn stake-btn-func btn-custom-2" disabled={state.isApproved}>APPROVE</button>
                                             ) : (
@@ -506,7 +521,7 @@ function OWN_Mustachio() {
                                         <div className="d-flex justify-content-between">
                                             <button onClick={claimRewards} type="button" className="btn stake-btn-func btn-custom-2" disabled={!state.isLoaded}>UNSTAKE</button>
                                             <button onClick={claimAndWithdraw} type="button" className="btn stake-btn-func btn-custom-2" disabled={!state.isLoaded}>CLAIM & WITHDRAW</button>
-                                        </div>
+                                        </div> */}
                                     </form>
                                     {/* END STAKING FORM */}
 
@@ -516,69 +531,61 @@ function OWN_Mustachio() {
                                     <div className="d-none d-sm-block">
                                         <div className="d-flex justify-content-between">
                                             <p className="mb-3 neo-bold font-size-90">Stake Required</p>
-                                            { state.isConnected ? (
-                                                <p className="mb-3 neo-regular font-size-90">{addCommasToNumber(state.userCurrentLPStaked, 5)} OWN/BUSD</p>
-                                            ) : (
-                                                <p className="mb-3 neo-regular font-size-90">Connect Wallet</p>
-                                            )}
+                                            <p className="mb-3 neo-regular font-size-90">{addCommasToNumber(state.stakeRequired)} OWN</p>
                                         </div>
                                         <div className="d-flex justify-content-between">
                                             <p className="mb-3 neo-bold font-size-90">Remaining Rewards</p>
-                                            { state.isConnected ? (
-                                                <p className="mb-3 neo-regular font-size-90">{addCommasToNumber(state.userRewardsEarned, 5)} OWN</p>
-                                            ) : (
-                                                <p className="mb-3 neo-regular font-size-90">Connect Wallet</p>
-                                            )}
+                                            <p className="mb-3 neo-regular font-size-90">{addCommasToNumber(state.remainingRewards)} MUSTACHIOS</p>
                                         </div>
                                         <div className="d-flex justify-content-between">
                                             <p className="mb-3 neo-bold font-size-90">Your Deposit</p>
                                             { state.isConnected ? (
-                                                <p className="mb-3 neo-regular font-size-90">{addCommasToNumber(state.userRate, 5)} OWN / week</p>
+                                                <p className="mb-3 neo-regular font-size-90">{addCommasToNumber(state.userOwnDeposits)} OWN</p>
                                             ) : (
                                                 <p className="mb-3 neo-regular font-size-90">Connect Wallet</p>
                                             )}
                                         </div>
                                         <div className="d-flex justify-content-between">
                                             <p className="mb-3 neo-bold font-size-90">Date Staked</p>
-                                            <p className="mb-3 neo-regular font-size-90">{state.apr} %</p>
+                                            <p className="mb-3 neo-regular font-size-90">{state.dateStaked}</p>
                                         </div>
                                         <div className="d-flex justify-content-between">
                                             <p className="mb-3 neo-bold font-size-90">Duration</p>
-                                            <p className="mb-3 neo-regular font-size-90">120,000,000 OWN</p>
+                                            { state.isConnected ? (
+                                                <p className="mb-3 neo-regular font-size-90">{addCommasToNumber(state.nftStakingDuration)} Days ({addCommasToNumber(state.userRemainingDuration)} remaining)</p>
+                                            ) : (
+                                                <p className="mb-3 neo-regular font-size-90">Connect Wallet</p>
+                                            )}
                                         </div>
                                     </div>
                                     <div className="d-block d-sm-none">
                                         <div className="mb-3">
                                             <p className="mb-1 neo-bold font-size-110">Stake Required</p>
-                                            { state.isConnected ? (
-                                                <p className="mb-1 neo-regular font-size-90">{addCommasToNumber(state.userCurrentLPStaked, 5)} OWN/BUSD</p>
-                                            ) : (
-                                                <p className="mb-1 neo-regular font-size-90">Connect Wallet</p>
-                                            )}
+                                            <p className="mb-1 neo-regular font-size-90">{addCommasToNumber(state.stakeRequired)} OWN</p>
                                         </div>
                                         <div className="mb-3">
                                             <p className="mb-1 neo-bold font-size-110">Remaining Rewards</p>
-                                            { state.isConnected ? (
-                                                <p className="mb-1 neo-regular font-size-90">{addCommasToNumber(state.userRewardsEarned, 5)} OWN</p>
-                                            ) : (
-                                                <p className="mb-1 neo-regular font-size-90">Connect Wallet</p>
-                                            )}
+                                            <p className="mb-1 neo-regular font-size-90">{addCommasToNumber(state.remainingRewards)} MUSTACHIOS</p>
                                         </div>
                                         <div className="mb-3">
                                             <p className="mb-1 neo-bold font-size-110">Your Deposit</p>
                                             { state.isConnected ? (
-                                                <p className="mb-1 neo-regular font-size-90">{addCommasToNumber(state.userRate, 5)} OWN / week</p>
+                                                <p className="mb-1 neo-regular font-size-90">{addCommasToNumber(state.userOwnDeposits)} OWN</p>
                                             ) : (
                                                 <p className="mb-3 neo-regular font-size-90">Connect Wallet</p>
                                             )}
                                         </div>
                                         <div className="mb-3">
                                             <p className="mb-1 neo-bold font-size-110">Date Staked</p>
-                                            <p className="mb-1 neo-regular font-size-90">{state.apr} %</p>
+                                            <p className="mb-1 neo-regular font-size-90">{state.dateStaked}</p>
                                         </div>
                                         <div>
                                             <p className="mb-1 neo-bold font-size-110">Duration</p>
-                                            <p className="mb-1 neo-regular font-size-90">120 Days ({state.lpStakingDuration} remaining)</p>
+                                            { state.isConnected ? (
+                                                <p className="mb-1 neo-regular font-size-90">{addCommasToNumber(state.nftStakingDuration)} Days ({addCommasToNumber(state.userRemainingDuration)} remaining)</p>
+                                            ) : (
+                                                <p className="mb-3 neo-regular font-size-90">Connect Wallet</p>
+                                            )}
                                         </div>
                                     </div>
                                     {/* END DETAILS */}
@@ -588,14 +595,14 @@ function OWN_Mustachio() {
 
                                     {/* PRODUCTION */}
                                     {/* <p className="font-size-90 text-color-6 neo-light mb-1">
-                                        <a href={`https://bscscan.com/address/${stakingAddress}`} target="_blank" rel="noreferrer" className="stake-link">
+                                        <a href={`https://bscscan.com/address/${nftStakingAddress}`} target="_blank" rel="noreferrer" className="stake-link">
                                             <b>View Staking Contract</b>
                                             &nbsp;<FontAwesomeIcon size="sm" icon={faExternalLinkAlt} />
                                         </a>
                                     </p> */}
                                     {/* DEVELOPMENT */}
                                     <p className="font-size-90 text-color-6 neo-light mb-1">
-                                        <a href={`https://testnet.bscscan.com/address/${stakingAddress}`} target="_blank" rel="noreferrer" className="stake-link">
+                                        <a href={`https://testnet.bscscan.com/address/${nftStakingAddress}`} target="_blank" rel="noreferrer" className="stake-link">
                                             <b>View Smart Contract</b>
                                             &nbsp;<FontAwesomeIcon color="black" size="sm" icon={faExternalLinkAlt} />
                                         </a>

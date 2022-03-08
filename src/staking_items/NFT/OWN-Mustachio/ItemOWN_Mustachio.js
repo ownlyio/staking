@@ -83,11 +83,6 @@ function ItemOWNMustachio(props) {
         return Math.floor(req.data / (3600*24))
     }
 
-    // round to the nearest hundredths
-    const roundOff = num => {
-        return +(Math.round(num + "e+2")  + "e-2");
-    }
-
     // add thousands separator
     const addCommasToNumber = (x, decimal = 5) => {
         if (!Number.isInteger(Number(x)) || Number(x) === 0) {
@@ -157,11 +152,7 @@ function ItemOWNMustachio(props) {
                 <div className="splatform-item-content">
                     <div className="d-flex justify-content-between mb-3">
                         <div className="splatform-desc text-left font-semibold font-size-100">Total Deposits</div>
-                        {isConnected ? (
-                            <div className="splatform-desc text-right text-color-7 font-size-100">{addCommasToNumber(state.totalOwnTokensStaked)} OWN</div>
-                        ) : (
-                            <div className="splatform-desc text-right text-color-7 font-size-100">Connect Wallet</div>
-                        )}
+                        <div className="splatform-desc text-right text-color-7 font-size-100">{addCommasToNumber(state.totalOwnTokensStaked)} OWN</div>
                     </div>
                     <div className="d-flex justify-content-between mb-3">
                         <div className="splatform-desc text-left font-semibold font-size-100">Stake Required</div>
