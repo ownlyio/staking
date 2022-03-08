@@ -48,6 +48,11 @@ function ItemOWNMustachio(props) {
             _setState("userOwnDeposits", web3.utils.fromWei(currentItem.amount))
         }
 
+        // get staking duration
+        const duration = await _nftTokenContract.methods.getStakeDuration().call()
+        const calculatedDuration = convertSecToDays(duration)
+        _setState("nftStakingDuration", calculatedDuration)
+
         _setState("isLoaded", true)
     }
 
@@ -56,12 +61,18 @@ function ItemOWNMustachio(props) {
         setState(prevState => ({...prevState, [name]: value}))
     }
 
-    // convert a timestamp to days
-    const convertTimestamp = secTime => {
+    // convert seconds to days
+    const convertSecToDays = secTime => {
         // PRODUCTION
         // return Math.floor(secTime / (3600*24))
         // DEVELOPMENT
         return secTime / (3600*24)
+    }
+
+    // convert a timestamp to days
+    const convertTimestamp = async unixTime => {
+        const req = await axios.get(`https://ownly.tk/api/get-remaining-time-from-timestamp/${unixTime}`)
+        return Math.floor(req.data / (3600*24))
     }
 
     // round to the nearest hundredths
@@ -98,11 +109,6 @@ function ItemOWNMustachio(props) {
             // get remaining rewards
             const remainingRewards = await nftStakingContract.methods.remainingRewards(nftTokenAddress).call()
             _setState("remainingRewards", remainingRewards)
-
-            // get staking duration
-            const duration = await nftTokenContract.methods.getStakeDuration().call()
-            const calculatedDuration = convertTimestamp(duration)
-            _setState("nftStakingDuration", calculatedDuration)
 
             // get staking required
             const stakeRequired = await nftTokenContract.methods.getStakeRequired().call()
@@ -175,7 +181,11 @@ function ItemOWNMustachio(props) {
                     </div>
                     <div className="d-flex justify-content-between mb-3">
                         <div className="splatform-desc text-left font-semibold font-size-100">Duration</div>
-                        <div className="splatform-desc text-right text-color-7 font-size-100">60 Days ({addCommasToNumber(state.nftStakingDuration)} remaining)</div>
+                        {isConnected ? (
+                            <div className="splatform-desc text-right text-color-7 font-size-100">{addCommasToNumber(state.nftStakingDuration)} Days ({addCommasToNumber(state.nftStakingDuration)} remaining)</div>
+                        ) : (
+                            <div className="splatform-desc text-right text-color-7 font-size-100">Connect Wallet</div>
+                        )}
                     </div>
                 </div>
                 <div className="splatform-item-btn">
