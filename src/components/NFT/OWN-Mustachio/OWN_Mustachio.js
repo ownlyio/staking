@@ -33,11 +33,13 @@ function OWN_Mustachio() {
     const [state, setState] = useState({
         isConnected: false,
         account: "",
+        accountAlreadyClaimed: false,
         currentOwnBalance: 0,
         currentStakeItemId: 0,
         helpText: "",
         isApproved: false,
         isStaked: false,
+        isStakingFinished: false,
         detectedChangeMessage: "",
         hasMetamask: false,
         isLoaded: false,
@@ -48,6 +50,7 @@ function OWN_Mustachio() {
         dateStaked: "--",
         nftStakingDuration: 0,
         userRemainingDuration: 0,
+        mintedId: 0,
         txError: "",
         txHash: "",
     })
@@ -57,6 +60,8 @@ function OWN_Mustachio() {
     // const explorerUrl = "https://bscscan.com/tx/"
     // DEVELOPMENT
     const explorerUrl = "https://testnet.bscscan.com/tx/"
+
+    const ownlyMarketUrl = `https://ownly.market/?network=bsc&contract=${nftTokenAddress}&token=`
 
     // Modals
     const [showNotConnected, setShowNotConnected] = useState(false)
@@ -138,6 +143,15 @@ function OWN_Mustachio() {
         // networkChangedListener()
     }, [])
 
+    useEffect(() => {
+        if (state.userRemainingDuration <= 0) {
+            _setState("isStakingFinished", true)
+            _setState("userRemainingDuration", 0)
+        } else {
+            _setState("isStakingFinished", false)
+        }
+    }, [state.userRemainingDuration])
+
     // account change listener (metamask only)
     // const accountChangedListener = () => {
     //     if (window.ethereum) {
@@ -182,6 +196,7 @@ function OWN_Mustachio() {
         const currentItem = await _nftStakingContract.methods.getStakingItem(currentItemId).call()
 
         _setState("currentStakeItemId", currentItemId)
+        
         console.log(currentItemId)
         console.log(currentItem)
 
@@ -225,29 +240,35 @@ function OWN_Mustachio() {
         _setState("isLoaded", true)
         
         // refresh data every 10 seconds
-        // setInterval(() => {
-        //     async function _getDetails() {
-        //         // get total deposits
-        //         const totalLP = await _stakingContract.methods.totalSupply().call()
-        //         _setState("totalLPTokensStaked", _web3.utils.fromWei(totalLP))
+        setInterval(() => {
+            async function _getDetails() {
+                // get total deposits
+                const totalStaked = await _nftStakingContract.methods.totalDeposits(nftTokenAddress).call()
+                _setState("totalOwnTokensStaked", _web3.utils.fromWei(totalStaked))
 
-        //         // APR
-        //         const apr = await getApr()
-        //         _setState("apr", roundOff(apr))
+                // get remaining rewards
+                const remainingRewards = await _nftStakingContract.methods.remainingRewards(nftTokenAddress).call()
+                _setState("remainingRewards", remainingRewards)
+                
+                // get OWN balance
+                const ownBalance = await _stakingTokenContract.methods.balanceOf(acct).call()
+                _setState("currentOwnBalance", _web3.utils.fromWei(ownBalance))
 
-        //         const lpTokenBal = await _stakingTokenContract.methods.balanceOf(acct).call()
-        //         _setState("currentLPBalance", _web3.utils.fromWei(lpTokenBal))
-        //         const lpTokenStaked = await _stakingContract.methods.balanceOf(acct).call()
-        //         _setState("userCurrentLPStaked", _web3.utils.fromWei(lpTokenStaked))
-        //         const rewardsEarned = await _stakingContract.methods.earned(acct).call()
-        //         _setState("userRewardsEarned", _web3.utils.fromWei(rewardsEarned))
+                // get staking duration
+                // DEVELOPMENT ONLY (comment on PRODUCTION)
+                const duration = await _nftTokenContract.methods.getStakeDuration().call()
+                const calculatedDuration = convertSecToDays(duration)
+                _setState("nftStakingDuration", calculatedDuration)
 
-        //         // compute user rate
-        //         computeUserRate(totalLP, lpTokenStaked)
-        //     }
+                if (Number(currentItem.startTime) !== 0) {
+                    const remainingDuration = Number(currentItem.startTime) + Number(duration)
+                    const calculatedRemaining = await convertTimestamp(remainingDuration)
+                    _setState("userRemainingDuration", calculatedRemaining)
+                }
+            }
             
-        //     _getDetails()
-        // }, 10000)
+            _getDetails()
+        }, 10000)
     }
 
     // switch network      
@@ -316,7 +337,7 @@ function OWN_Mustachio() {
             } else {
                 if (state.isStaked) {
                     handleShowOnError()
-                    _setState("txError", "Cannot restake again. You can unstake and try again, or wait for the duration to finish and restake again.")
+                    _setState("txError", "Cannot restake again. You can unstake and try again, but you will lose the NFT reward.")
                 } else {
                     const approveAmount = _web3.utils.toWei(approveAmountEth)
             
@@ -409,24 +430,33 @@ function OWN_Mustachio() {
             handleShowOnError()
             _setState("txError", "Your staked balance is 0. Please restake and finish the staking period to mint your NFT.")
         } else {
-            await _nftTokenContract.methods.stakeMint(nftStakingAddress, state.currentStakeItemId).send({
-                from: state.account
-            })
-            .on('transactionHash', function(hash){
-                handleShowPleaseWait()
-            })
-            .on('error', function(error) {
-                handleClosePleaseWait()
+            if (!state.isStakingFinished) {
                 handleShowOnError()
-                _setState("txError", error.message)
-            })
-            .then(async function(receipt) {
-                handleClosePleaseWait()
-                handleShowExit()
-                _setState("txHash", receipt.transactionHash)
-                _setState("helpText", 'Thank you for participating!')
-                updateDetails()
-            })
+                _setState("txError", "Staking period is not yet finished.")
+            } else {
+                await _nftTokenContract.methods.stakeMint(nftStakingAddress, state.currentStakeItemId).send({
+                    from: state.account
+                })
+                .on('transactionHash', function(hash){
+                    handleShowPleaseWait()
+                })
+                .on('error', function(error) {
+                    handleClosePleaseWait()
+                    handleShowOnError()
+                    _setState("txError", error.message)
+                })
+                .then(async function(receipt) {
+                    const lastMintedId = await _nftTokenContract.methods.getLastMintedTokenId().call()
+                    _setState("mintedId", lastMintedId)
+                    console.log("last minted id: " + lastMintedId)
+    
+                    handleClosePleaseWait()
+                    handleShowExit()
+                    _setState("txHash", receipt.transactionHash)
+                    _setState("helpText", 'Thank you for participating!')
+                    updateDetails()
+                })
+            }
         }
     }
 
@@ -544,11 +574,11 @@ function OWN_Mustachio() {
                                         </div>
                                         <div className="d-flex justify-content-between mb-1">
                                             { state.isConnected ? (
-                                                <button onClick={approveStaking} type="button" className="btn stake-btn-func btn-custom-2" disabled={state.isApproved}>APPROVE</button>
+                                                <button onClick={approveStaking} type="button" className="btn stake-btn-func btn-custom-2" disabled={state.isApproved || state.accountAlreadyClaimed}>APPROVE</button>
                                             ) : (
                                                 <button type="button" onClick={handleShowNotConnected} className="btn stake-btn-func btn-custom-2" disabled={state.isApproved}>APPROVE</button>
                                             )}
-                                            <button onClick={enterStaking} type="button" className="btn stake-btn-func btn-custom-2" disabled={!state.isApproved}>STAKE</button>
+                                            <button onClick={enterStaking} type="button" className="btn stake-btn-func btn-custom-2" disabled={!state.isApproved || state.isStaked}>STAKE</button>
                                         </div>
                                         <div className="d-flex justify-content-between">
                                             <button onClick={unstake} type="button" className="btn stake-btn-func btn-custom-2" disabled={!state.isLoaded}>UNSTAKE</button>
@@ -768,6 +798,9 @@ function OWN_Mustachio() {
                     </Button>
                     <Button className="font-w-hermann w-hermann-reg" variant="primary" onClick={() => window.open(explorerUrl + state.txHash, '_blank').focus()}>
                         View on BscScan
+                    </Button>
+                    <Button className="font-w-hermann w-hermann-reg" variant="primary" onClick={() => window.open(ownlyMarketUrl + state.mintedId, '_blank').focus()}>
+                        View on Ownly Market
                     </Button>
                 </Modal.Footer>
             </Modal>
