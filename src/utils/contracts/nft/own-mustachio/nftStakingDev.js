@@ -1,4 +1,4 @@
-const nftStakingAddress = "0xC5cBC08ADA3e0d20a537b9386CE9d560aE86058a"
+const nftStakingAddress = "0xae6C1aC0Cad037cc6578AEe82f6446cfe12eDE44"
 const nftStakingAbi = [
     {
         "anonymous":false,
@@ -78,6 +78,30 @@ const nftStakingAbi = [
             }
         ],
         "name":"getCurrentStakingItemId",
+        "outputs":[
+            {
+                "internalType":"uint256",
+                "name":"",
+                "type":"uint256"
+            }
+        ],
+        "stateMutability":"view",
+        "type":"function"
+    },
+    {
+        "inputs":[
+            {
+                "internalType":"address",
+                "name":"account",
+                "type":"address"
+            },
+            {
+                "internalType":"address",
+                "name":"nftContractAddress",
+                "type":"address"
+            }
+        ],
+        "name":"getMintedStakingItemId",
         "outputs":[
             {
                 "internalType":"uint256",
@@ -180,6 +204,45 @@ const nftStakingAbi = [
     {
         "inputs":[
             {
+                "internalType":"address",
+                "name":"account",
+                "type":"address"
+            },
+            {
+                "internalType":"address",
+                "name":"nftContractAddress",
+                "type":"address"
+            }
+        ],
+        "name":"getStakingItemId",
+        "outputs":[
+            {
+                "internalType":"uint256",
+                "name":"",
+                "type":"uint256"
+            }
+        ],
+        "stateMutability":"view",
+        "type":"function"
+    },
+    {
+        "inputs":[
+            
+        ],
+        "name":"getStakingItemIdHeight",
+        "outputs":[
+            {
+                "internalType":"uint256",
+                "name":"",
+                "type":"uint256"
+            }
+        ],
+        "stateMutability":"view",
+        "type":"function"
+    },
+    {
+        "inputs":[
+            {
                 "internalType":"uint256",
                 "name":"stakingItemId",
                 "type":"uint256"
@@ -248,62 +311,6 @@ const nftStakingAbi = [
                 "internalType":"uint256",
                 "name":"",
                 "type":"uint256"
-            }
-        ],
-        "stateMutability":"view",
-        "type":"function"
-    },
-    {
-        "inputs":[
-            {
-                "internalType":"address",
-                "name":"account",
-                "type":"address"
-            },
-            {
-                "internalType":"address",
-                "name":"nftContractAddress",
-                "type":"address"
-            }
-        ],
-        "name":"getStakingItems",
-        "outputs":[
-            {
-                "components":[
-                    {
-                        "internalType":"address",
-                        "name":"nftContractAddress",
-                        "type":"address"
-                    },
-                    {
-                        "internalType":"address",
-                        "name":"account",
-                        "type":"address"
-                    },
-                    {
-                        "internalType":"uint256",
-                        "name":"amount",
-                        "type":"uint256"
-                    },
-                    {
-                        "internalType":"uint256",
-                        "name":"startTime",
-                        "type":"uint256"
-                    },
-                    {
-                        "internalType":"bool",
-                        "name":"isWithdrawnWithoutMinting",
-                        "type":"bool"
-                    },
-                    {
-                        "internalType":"bool",
-                        "name":"isClaimed",
-                        "type":"bool"
-                    }
-                ],
-                "internalType":"struct NFTStaking.StakingItem[]",
-                "name":"",
-                "type":"tuple[]"
             }
         ],
         "stateMutability":"view",
@@ -394,6 +401,17 @@ const nftStakingAbi = [
             }
         ],
         "name":"setCollectionMaxStaking",
+        "outputs":[
+            
+        ],
+        "stateMutability":"nonpayable",
+        "type":"function"
+    },
+    {
+        "inputs":[
+            
+        ],
+        "name":"setFirstStakingItemAsEmpty",
         "outputs":[
             
         ],
