@@ -1,4 +1,4 @@
-const nftTokenAddress = "0xD2bC0ccd3B0c6706b42A77aD069B0854E3Ca0c71"
+const nftTokenAddress = "0x2cc2D29c6514748b723eac6eFBff793Fb276c3f1"
 const nftTokenAbi = [
     {
         "inputs":[
@@ -599,6 +599,49 @@ const nftTokenAbi = [
                 "internalType":"string",
                 "name":"",
                 "type":"string"
+            }
+        ],
+        "stateMutability":"view",
+        "type":"function"
+    },
+    {
+        "inputs":[
+            {
+                "internalType":"uint256",
+                "name":"index",
+                "type":"uint256"
+            }
+        ],
+        "name":"tokenByIndex",
+        "outputs":[
+            {
+                "internalType":"uint256",
+                "name":"",
+                "type":"uint256"
+            }
+        ],
+        "stateMutability":"view",
+        "type":"function"
+    },
+    {
+        "inputs":[
+            {
+                "internalType":"address",
+                "name":"owner",
+                "type":"address"
+            },
+            {
+                "internalType":"uint256",
+                "name":"index",
+                "type":"uint256"
+            }
+        ],
+        "name":"tokenOfOwnerByIndex",
+        "outputs":[
+            {
+                "internalType":"uint256",
+                "name":"",
+                "type":"uint256"
             }
         ],
         "stateMutability":"view",

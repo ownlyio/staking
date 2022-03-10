@@ -254,7 +254,7 @@ function OWN_Mustachio() {
                 // const calculatedDuration = convertSecToDays(duration)
                 // _setState("nftStakingDuration", calculatedDuration)
 
-                if (Number(currentItemId) !== 0) { // staking active            
+                // if (Number(currentItemId) !== 0) { // staking active            
                     // const remainingDuration = Number(currentItem.startTime) + Number(duration)
                     // const calculatedRemaining = await convertTimestamp(remainingDuration)
                     // console.log("calculated remaining: "+calculatedRemaining)
@@ -266,7 +266,7 @@ function OWN_Mustachio() {
                     //     _setState("userRemainingDuration", 0)
                     //     _setState("isStakingFinished", true)
                     // }
-                }
+                // }
             }
             
             _getDetails()
