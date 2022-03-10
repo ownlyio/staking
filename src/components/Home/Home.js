@@ -55,7 +55,7 @@ export default function Home(props) {
                         <div className="col-12 col-md-6">
                             <div className="home-content">
                                 <p className="home-title font-size-320 text-color-3 neo-bold mb-4">Stake your OWN Tokens, Earn Rewards!</p>
-                                <p className="home-sub font-size-130 text-color-6 mb-5">Stake your $OWN tokens to our staking platform and earn rewards. Get exclusive bonuses and over 50.00% fees back. Keep your coins in your wallet and under control.</p>
+                                <p className="home-sub font-size-130 text-color-6 mb-5">Stake your $OWN tokens to our staking platform and earn rewards. Get exclusive NFTs from our collection. Keep track of your coins and reap rewards in tokens or NFTs.</p>
                                 <div className="home-cta d-flex align-items-center">
                                     <HashLink smooth to="#staking-platforms" className="home-btn-1 btn btn-custom-1 rounded-lg" scroll={el => scrollWithOffset(el)}>See Staking Options</HashLink>
                                     <HashLink smooth to="#how-it-works" className="home-btn-2 btn btn-custom-8 rounded-lg" scroll={el => scrollWithOffset(el)}>How it works</HashLink>
@@ -73,7 +73,7 @@ export default function Home(props) {
             <div id="how-it-works">
                 <div className="container h-100">
                     <p className="hiw-title font-size-250 text-center text-color-2 neo-bold mb-3">How this works</p>
-                    <p className="hiw-sub font-size-130 text-center text-color-7 mb-2">Simple steps to earn rewards and still having a full control of your coins</p>
+                    <p className="hiw-sub font-size-130 text-center text-color-7 mb-2">Simple steps to earn rewards just by staking your tokens</p>
 
                     <div className="row justify-content-center align-items-start">
                         <div className="col-12 col-md-4 mt-3">
@@ -82,7 +82,7 @@ export default function Home(props) {
                                     <FontAwesomeIcon icon={faWallet} size="4x" color="#616161" />
                                 </div>
                                 <p className="hiw-item-title font-size-150 text-center font-semibold text-color-3 mb-3">Use your Metamask Wallet</p>
-                                <p className="hiw-item-sub font-size-110 text-center neo-light text-color-6 mb-0">You decide how much you'll stake. You'll use your Metamask wallet for this.</p>
+                                <p className="hiw-item-sub font-size-110 text-center neo-light text-color-6 mb-0">Connect your Metamask Wallet on our platform to participate.</p>
                             </div>
                         </div>
                         <div className="col-12 col-md-4 mt-3">
