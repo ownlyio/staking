@@ -5,14 +5,14 @@ import axios from 'axios'
 import ownMustachio from '../../../img/staking/own-mustachio-rulers.png'
 
 // PRODUCTION
-// import { nftStakingAbi, nftStakingAddress } from '../../../utils/contracts/nft/own-mustachio/prod-nftStaking'
-// import { nftTokenAbi, nftTokenAddress } from '../../../utils/contracts/nft/own-mustachio/prod-nftToken'
-// import { stakingTokenAbi, stakingTokenAddress } from '../../../utils/contracts/nft/own-mustachio/prod-stakingToken'
+import { nftStakingAbi, nftStakingAddress } from '../../../utils/contracts/nft/own-mustachio/prod-nftStaking'
+import { nftTokenAbi, nftTokenAddress } from '../../../utils/contracts/nft/own-mustachio/prod-nftToken'
+import { stakingTokenAbi, stakingTokenAddress } from '../../../utils/contracts/nft/own-mustachio/prod-stakingToken'
 
 // DEVELOPMENT
-import { nftStakingAbi, nftStakingAddress } from '../../../utils/contracts/nft/own-mustachio/nftStakingDev'
-import { nftTokenAbi, nftTokenAddress } from '../../../utils/contracts/nft/own-mustachio/nftTokenDev'
-import { stakingTokenAbi, stakingTokenAddress } from '../../../utils/contracts/nft/own-mustachio/stakingTokenDev'
+// import { nftStakingAbi, nftStakingAddress } from '../../../utils/contracts/nft/own-mustachio/nftStakingDev'
+// import { nftTokenAbi, nftTokenAddress } from '../../../utils/contracts/nft/own-mustachio/nftTokenDev'
+// import { stakingTokenAbi, stakingTokenAddress } from '../../../utils/contracts/nft/own-mustachio/stakingTokenDev'
 
 // Utils
 import { configureWeb3 } from '../../../utils/web3Init'
@@ -96,18 +96,18 @@ function ItemOWNMustachio(props) {
     // convert seconds to days
     const convertSecToDays = secTime => {
         // PRODUCTION
-        // return Math.floor(secTime / (3600*24))
+        return Math.floor(secTime / (3600*24))
         // DEVELOPMENT
-        return secTime / (3600*24)
+        // return secTime / (3600*24)
     }
 
     // convert a timestamp to days
     const convertTimestamp = async unixTime => {
         const req = await axios.get(`https://ownly.tk/api/get-remaining-time-from-timestamp/${unixTime}`)
         // PRODUCTION
-        // return Math.floor(req.data / (3600*24))
+        return Math.floor(req.data / (3600*24))
         // DEVELOPMENT
-        return req.data / (3600*24)
+        // return req.data / (3600*24)
     }
 
     // add thousands separator
@@ -124,9 +124,9 @@ function ItemOWNMustachio(props) {
     useEffect(() => {
         async function _init() {
             // WEB3 RPC - BSC MAINNET
-            // web3 = configureWeb3("https://bsc-dataseed.binance.org/")
+            web3 = configureWeb3("https://bsc-dataseed.binance.org/")
             // WEB3 RPC - BSC TESTNET (COMMENT WHEN PRODUCTION)
-            web3 = configureWeb3("https://data-seed-prebsc-1-s1.binance.org:8545/")
+            // web3 = configureWeb3("https://data-seed-prebsc-1-s1.binance.org:8545/")
 
             // RPC Initialize
             nftStakingContract = new web3.eth.Contract(nftStakingAbi, nftStakingAddress)

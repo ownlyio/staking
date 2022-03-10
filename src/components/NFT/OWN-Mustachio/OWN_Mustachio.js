@@ -11,14 +11,14 @@ import metamask from '../../../img/metamask.png'
 import ownMustachio from '../../../img/staking/own-mustachio-rulers.png'
 
 // PRODUCTION
-// import { nftStakingAbi, nftStakingAddress } from '../../../utils/contracts/nft/own-mustachio/prod-nftStaking'
-// import { nftTokenAbi, nftTokenAddress } from '../../../utils/contracts/nft/own-mustachio/prod-nftToken'
-// import { stakingTokenAbi, stakingTokenAddress } from '../../../utils/contracts/nft/own-mustachio/prod-stakingToken'
+import { nftStakingAbi, nftStakingAddress } from '../../../utils/contracts/nft/own-mustachio/prod-nftStaking'
+import { nftTokenAbi, nftTokenAddress } from '../../../utils/contracts/nft/own-mustachio/prod-nftToken'
+import { stakingTokenAbi, stakingTokenAddress } from '../../../utils/contracts/nft/own-mustachio/prod-stakingToken'
 
 // DEVELOPMENT
-import { nftStakingAbi, nftStakingAddress } from '../../../utils/contracts/nft/own-mustachio/nftStakingDev'
-import { nftTokenAbi, nftTokenAddress } from '../../../utils/contracts/nft/own-mustachio/nftTokenDev'
-import { stakingTokenAbi, stakingTokenAddress } from '../../../utils/contracts/nft/own-mustachio/stakingTokenDev'
+// import { nftStakingAbi, nftStakingAddress } from '../../../utils/contracts/nft/own-mustachio/nftStakingDev'
+// import { nftTokenAbi, nftTokenAddress } from '../../../utils/contracts/nft/own-mustachio/nftTokenDev'
+// import { stakingTokenAbi, stakingTokenAddress } from '../../../utils/contracts/nft/own-mustachio/stakingTokenDev'
 
 // Utils
 import { configureWeb3 } from '../../../utils/web3Init'
@@ -57,9 +57,9 @@ function OWN_Mustachio() {
 
     // Other Variables
     // PRODUCTION
-    // const explorerUrl = "https://bscscan.com/tx/"
+    const explorerUrl = "https://bscscan.com/tx/"
     // DEVELOPMENT
-    const explorerUrl = "https://testnet.bscscan.com/tx/"
+    // const explorerUrl = "https://testnet.bscscan.com/tx/"
 
     const ownlyMarketUrl = `https://ownly.market/?network=bsc&contract=${nftTokenAddress}&token=`
 
@@ -101,9 +101,9 @@ function OWN_Mustachio() {
     useEffect(() => {
         async function _init() {
             // WEB3 RPC - BSC MAINNET
-            // web3 = configureWeb3("https://bsc-dataseed.binance.org/")
+            web3 = configureWeb3("https://bsc-dataseed.binance.org/")
             // WEB3 RPC - BSC TESTNET (COMMENT WHEN PRODUCTION)
-            web3 = configureWeb3("https://data-seed-prebsc-1-s1.binance.org:8545/")
+            // web3 = configureWeb3("https://data-seed-prebsc-1-s1.binance.org:8545/")
 
             // RPC Initialize
             nftStakingContract = new web3.eth.Contract(nftStakingAbi, nftStakingAddress)
@@ -279,9 +279,9 @@ function OWN_Mustachio() {
             await _web3.currentProvider.request({
                 method: "wallet_switchEthereumChain",
                 // PRODUCTION
-                // params: [{ chainId: "0x38" }],
+                params: [{ chainId: "0x38" }],
                 // DEVELOPMENT
-                params: [{ chainId: "0x61" }],
+                // params: [{ chainId: "0x61" }],
             })
 
             handleCloseWrongNetwork()
@@ -307,9 +307,9 @@ function OWN_Mustachio() {
             const netId = await _web3.eth.net.getId() // 97 - BSC testnet, 56 - BSC Mainnet
             
             // PRODUCTION
-            // if (netId === 56) {
+            if (netId === 56) {
             // DEVELOPMENT
-            if (netId === 97) {
+            // if (netId === 97) {
                 const acct = await window.ethereum.request({ method: "eth_requestAccounts"})
                 if (acct.length > 0) {
                     _setState("isConnected", true)
@@ -486,18 +486,18 @@ function OWN_Mustachio() {
     // convert seconds to days
     const convertSecToDays = secTime => {
         // PRODUCTION
-        // return Math.floor(secTime / (3600*24))
+        return Math.floor(secTime / (3600*24))
         // DEVELOPMENT
-        return secTime / (3600*24)
+        // return secTime / (3600*24)
     }
 
     // convert a timestamp to days
     const convertTimestamp = async unixTime => {
         const req = await axios.get(`https://ownly.tk/api/get-remaining-time-from-timestamp/${unixTime}`)
         // PRODUCTION
-        // return Math.floor(req.data / (3600*24))
+        return Math.floor(req.data / (3600*24))
         // DEVELOPMENT
-        return req.data / (3600*24)
+        // return req.data / (3600*24)
     }
 
     // make an address short
@@ -686,19 +686,19 @@ function OWN_Mustachio() {
 
 
                                     {/* PRODUCTION */}
-                                    {/* <p className="font-size-90 text-color-6 neo-light mb-1">
+                                    <p className="font-size-90 text-color-6 neo-light mb-1">
                                         <a href={`https://bscscan.com/address/${nftStakingAddress}`} target="_blank" rel="noreferrer" className="stake-link">
                                             <b>View Staking Contract</b>
                                             &nbsp;<FontAwesomeIcon size="sm" icon={faExternalLinkAlt} />
                                         </a>
-                                    </p> */}
+                                    </p>
                                     {/* DEVELOPMENT */}
-                                    <p className="font-size-90 text-color-6 neo-light mb-1">
+                                    {/* <p className="font-size-90 text-color-6 neo-light mb-1">
                                         <a href={`https://testnet.bscscan.com/address/${nftStakingAddress}`} target="_blank" rel="noreferrer" className="stake-link">
                                             <b>View Smart Contract</b>
                                             &nbsp;<FontAwesomeIcon color="black" size="sm" icon={faExternalLinkAlt} />
                                         </a>
-                                    </p>
+                                    </p> */}
                                 </div>
                             </div>
                         </div>
@@ -852,22 +852,22 @@ function OWN_Mustachio() {
                         <FontAwesomeIcon color="green" size="6x" icon={faExclamationCircle} />
                     </div>
                     {/* PRODUCTION */}
-                    {/* <p className="app-network-modal-content text-center font-andes text-lg">Please connect to BSC Mainnet</p> */}
+                    <p className="app-network-modal-content text-center font-andes text-lg">Please connect to BSC Mainnet</p>
                     {/* DEVELOPMENT */}
-                    <p className="app-network-modal-content text-center font-andes text-lg">Please connect to BSC Testnet</p>
+                    {/* <p className="app-network-modal-content text-center font-andes text-lg">Please connect to BSC Testnet</p> */}
                 </Modal.Body>
                 <Modal.Footer className="justify-content-center">
                     <Button className="font-w-hermann w-hermann-reg" variant="secondary" onClick={handleCloseWrongNetwork}>
                         Close
                     </Button>
                     {/* PRODUCTION */}
-                    {/* <Button className="font-w-hermann w-hermann-reg" variant="primary" onClick={() => switchNetwork("bscmainnet")}>
-                        Switch Network
-                    </Button> */}
-                    {/* DEVELOPMENT */}
-                    <Button className="font-w-hermann w-hermann-reg" variant="primary" onClick={() => switchNetwork("bsctestnet")}>
+                    <Button className="font-w-hermann w-hermann-reg" variant="primary" onClick={() => switchNetwork("bscmainnet")}>
                         Switch Network
                     </Button>
+                    {/* DEVELOPMENT */}
+                    {/* <Button className="font-w-hermann w-hermann-reg" variant="primary" onClick={() => switchNetwork("bsctestnet")}>
+                        Switch Network
+                    </Button> */}
                 </Modal.Footer>
             </Modal>     
 

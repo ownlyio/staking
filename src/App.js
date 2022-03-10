@@ -43,9 +43,9 @@ function App() {
     useEffect(() => {
         async function _init() {
             // WEB3 RPC - BSC MAINNET
-            // web3 = configureWeb3("https://bsc-dataseed.binance.org/")
+            web3 = configureWeb3("https://bsc-dataseed.binance.org/")
             // WEB3 RPC - BSC TESTNET (COMMENT WHEN PRODUCTION)
-            web3 = configureWeb3("https://data-seed-prebsc-1-s1.binance.org:8545/")
+            // web3 = configureWeb3("https://data-seed-prebsc-1-s1.binance.org:8545/")
 
             // Metamask
             const web3Metamask = configureWeb3()
@@ -69,9 +69,9 @@ function App() {
             const netId = await _web3.eth.net.getId() // 97 - BSC testnet, 56 - BSC Mainnet
             
             // PRODUCTION
-            // if (netId === 56) {
+            if (netId === 56) {
             // DEVELOPMENT
-            if (netId === 97) {
+            // if (netId === 97) {
                 const acct = await window.ethereum.request({ method: "eth_requestAccounts"})
                 if (acct.length > 0) {
                     _setState("isConnected", true)
@@ -100,9 +100,9 @@ function App() {
         if (window.ethereum) {
             window.ethereum.on('chainChanged', (chainId) => {
                 // PRODUCTION
-                // if (chainId !== "0x38") {
+                if (chainId !== "0x38") {
                 // DEVELOPMENT
-                if (chainId !== "0x61") { 
+                // if (chainId !== "0x61") { 
                     _setState("detectedChangeMessage", "Network change detected!")
                     handleShowDetected()
                 }
@@ -116,9 +116,9 @@ function App() {
             await _web3.currentProvider.request({
                 method: "wallet_switchEthereumChain",
                 // PRODUCTION
-                // params: [{ chainId: "0x38" }],
+                params: [{ chainId: "0x38" }],
                 // DEVELOPMENT
-                params: [{ chainId: "0x61" }],
+                // params: [{ chainId: "0x61" }],
             })
 
             handleCloseWrongNetwork()
@@ -208,22 +208,22 @@ function App() {
                             <FontAwesomeIcon color="green" size="6x" icon={faExclamationCircle} />
                         </div>
                         {/* PRODUCTION */}
-                        {/* <p className="app-network-modal-content text-center font-andes text-lg">Please connect to BSC Mainnet</p> */}
+                        <p className="app-network-modal-content text-center font-andes text-lg">Please connect to BSC Mainnet</p>
                         {/* DEVELOPMENT */}
-                        <p className="app-network-modal-content text-center font-andes text-lg">Please connect to BSC Testnet</p>
+                        {/* <p className="app-network-modal-content text-center font-andes text-lg">Please connect to BSC Testnet</p> */}
                     </Modal.Body>
                     <Modal.Footer className="justify-content-center">
                         <Button className="font-w-hermann w-hermann-reg" variant="secondary" onClick={handleCloseWrongNetwork}>
                             Close
                         </Button>
                         {/* PRODUCTION */}
-                        {/* <Button className="font-w-hermann w-hermann-reg" variant="primary" onClick={() => switchNetwork("bscmainnet")}>
-                            Switch Network
-                        </Button> */}
-                        {/* DEVELOPMENT */}
-                        <Button className="font-w-hermann w-hermann-reg" variant="primary" onClick={() => switchNetwork("bsctestnet")}>
+                        <Button className="font-w-hermann w-hermann-reg" variant="primary" onClick={() => switchNetwork("bscmainnet")}>
                             Switch Network
                         </Button>
+                        {/* DEVELOPMENT */}
+                        {/* <Button className="font-w-hermann w-hermann-reg" variant="primary" onClick={() => switchNetwork("bsctestnet")}>
+                            Switch Network
+                        </Button> */}
                     </Modal.Footer>
                 </Modal>     
 
