@@ -415,43 +415,15 @@ function OWN_Mustachio() {
 
     // unstake
     const unstake = async () => {
-        if (!state.isStaked) {
+        if (state.accountAlreadyClaimed) {
             handleShowOnError()
-            _setState("txError", "You do not yet participated in the staking.")
+            _setState("txError", "You already staked using this address.")
         } else {
-            await _nftStakingContract.methods.unstake(state.currentStakeItemId).send({
-                from: state.account
-            })
-            .on('transactionHash', function(hash){
-                handleShowPleaseWait()
-            })
-            .on('error', function(error) {
-                handleClosePleaseWait()
+            if (!state.isStaked) {
                 handleShowOnError()
-                _setState("txError", error.message)
-            })
-            .then(async function(receipt) {
-                handleClosePleaseWait()
-                handleShowUnstake()
-                _setState("isApproved", false)
-                _setState("txHash", receipt.transactionHash)
-                _setState("helpText", 'Successfully unstaked.')
-                updateDetails()
-            })
-        }
-    }
-
-    // mint and withdraw
-    const mintWithdraw = async () => {
-        if (!state.isStaked) {
-            handleShowOnError()
-            _setState("txError", "Your staked balance is 0. Please restake and finish the staking period to mint your NFT.")
-        } else {
-            if (!state.isStakingFinished) {
-                handleShowOnError()
-                _setState("txError", "Staking period is not yet finished.")
+                _setState("txError", "You do not yet participated in the staking.")
             } else {
-                await _nftTokenContract.methods.stakeMint(nftStakingAddress, state.currentStakeItemId).send({
+                await _nftStakingContract.methods.unstake(state.currentStakeItemId).send({
                     from: state.account
                 })
                 .on('transactionHash', function(hash){
@@ -463,16 +435,54 @@ function OWN_Mustachio() {
                     _setState("txError", error.message)
                 })
                 .then(async function(receipt) {
-                    const lastMintedId = await _nftTokenContract.methods.getLastMintedTokenId().call()
-                    _setState("mintedId", lastMintedId)
-                    console.log("last minted id: " + lastMintedId)
-    
                     handleClosePleaseWait()
-                    handleShowExit()
+                    handleShowUnstake()
+                    _setState("isApproved", false)
                     _setState("txHash", receipt.transactionHash)
-                    _setState("helpText", 'Thank you for participating!')
+                    _setState("helpText", 'Successfully unstaked.')
                     updateDetails()
                 })
+            }
+        }
+    }
+
+    // mint and withdraw
+    const mintWithdraw = async () => {
+        if (state.accountAlreadyClaimed) {
+            handleShowOnError()
+            _setState("txError", "You already staked using this address.")
+        } else {
+            if (!state.isStaked) {
+                handleShowOnError()
+                _setState("txError", "Your staked balance is 0. Please restake and finish the staking period to mint your NFT.")
+            } else {
+                if (!state.isStakingFinished) {
+                    handleShowOnError()
+                    _setState("txError", "Staking period is not yet finished.")
+                } else {
+                    await _nftTokenContract.methods.stakeMint(nftStakingAddress, state.currentStakeItemId).send({
+                        from: state.account
+                    })
+                    .on('transactionHash', function(hash){
+                        handleShowPleaseWait()
+                    })
+                    .on('error', function(error) {
+                        handleClosePleaseWait()
+                        handleShowOnError()
+                        _setState("txError", error.message)
+                    })
+                    .then(async function(receipt) {
+                        const lastMintedId = await _nftTokenContract.methods.getLastMintedTokenId().call()
+                        _setState("mintedId", lastMintedId)
+                        console.log("last minted id: " + lastMintedId)
+        
+                        handleClosePleaseWait()
+                        handleShowExit()
+                        _setState("txHash", receipt.transactionHash)
+                        _setState("helpText", 'Thank you for participating!')
+                        updateDetails()
+                    })
+                }
             }
         }
     }
