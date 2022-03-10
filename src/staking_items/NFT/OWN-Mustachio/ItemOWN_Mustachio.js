@@ -218,7 +218,7 @@ function ItemOWNMustachio(props) {
                     </div>
                 </div>
                 <div className="splatform-item-btn">
-                    <Link to="/own-marauders" className="btn btn-custom-3 w-100 font-size-150">Stake Now!</Link>
+                    <Link to="/own-marauders" className="btn btn-custom-3 w-100 font-size-120">Stake Now!</Link>
                 </div>
             </div>
         </div>

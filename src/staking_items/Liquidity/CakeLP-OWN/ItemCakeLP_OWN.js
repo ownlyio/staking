@@ -199,7 +199,7 @@ function ItemCakeLPOWN(props) {
                     </div>
                 </div>
                 <div className="splatform-item-btn">
-                    <Link to="/cakelp-own" className="btn btn-custom-3 w-100 font-size-150">Stake Now!</Link>
+                    <Link to="/cakelp-own" className="btn btn-custom-3 w-100 font-size-120">Stake Now!</Link>
                 </div>
             </div>  
         </div>
