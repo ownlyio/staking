@@ -1,4 +1,4 @@
-const stakingTokenAddress = "0xC3Df366fAf79c6Caff3C70948363f00b9Ac55FEE"
+const stakingTokenAddress = "0x7665CB7b0d01Df1c9f9B9cC66019F00aBD6959bA"
 const stakingTokenAbi = [
     {
         "inputs":[

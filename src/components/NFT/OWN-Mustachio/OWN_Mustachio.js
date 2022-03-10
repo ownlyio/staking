@@ -11,8 +11,9 @@ import metamask from '../../../img/metamask.png'
 import ownMustachio from '../../../img/staking/own-mustachio-rulers.png'
 
 // PRODUCTION
-// import { stakingTokenAbi, stakingTokenAddress } from '../../../utils/contracts/liquidity/cakelp-own/stakingToken'
-// import { stakingAbi, stakingAddress } from '../../../utils/contracts/liquidity/cakelp-own/staking'
+// import { nftStakingAbi, nftStakingAddress } from '../../../utils/contracts/nft/own-mustachio/prod-nftStaking'
+// import { nftTokenAbi, nftTokenAddress } from '../../../utils/contracts/nft/own-mustachio/prod-nftToken'
+// import { stakingTokenAbi, stakingTokenAddress } from '../../../utils/contracts/nft/own-mustachio/prod-stakingToken'
 
 // DEVELOPMENT
 import { nftStakingAbi, nftStakingAddress } from '../../../utils/contracts/nft/own-mustachio/nftStakingDev'
@@ -21,11 +22,9 @@ import { stakingTokenAbi, stakingTokenAddress } from '../../../utils/contracts/n
 
 // Utils
 import { configureWeb3 } from '../../../utils/web3Init'
-import { getApr } from '../../../utils/apr'
 import networks from '../../../utils/networks'
 
 function OWN_Mustachio() {
-    var timer
     let web3, nftStakingContract, nftTokenContract
     const [_web3, setWeb3] = useState()
     const [_nftStakingContract, setNftStakingContract] = useState()

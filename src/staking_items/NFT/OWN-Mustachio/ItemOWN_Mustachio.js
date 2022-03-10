@@ -5,8 +5,9 @@ import axios from 'axios'
 import ownMustachio from '../../../img/staking/own-mustachio-rulers.png'
 
 // PRODUCTION
-// import { stakingTokenAbi, stakingTokenAddress } from '../../../utils/contracts/liquidity/cakelp-own/stakingToken'
-// import { stakingAbi, stakingAddress } from '../../../utils/contracts/liquidity/cakelp-own/staking'
+// import { nftStakingAbi, nftStakingAddress } from '../../../utils/contracts/nft/own-mustachio/prod-nftStaking'
+// import { nftTokenAbi, nftTokenAddress } from '../../../utils/contracts/nft/own-mustachio/prod-nftToken'
+// import { stakingTokenAbi, stakingTokenAddress } from '../../../utils/contracts/nft/own-mustachio/prod-stakingToken'
 
 // DEVELOPMENT
 import { nftStakingAbi, nftStakingAddress } from '../../../utils/contracts/nft/own-mustachio/nftStakingDev'
