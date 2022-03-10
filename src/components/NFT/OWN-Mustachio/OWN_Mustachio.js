@@ -331,7 +331,7 @@ function OWN_Mustachio() {
             handleShowOnError()
             _setState("txError", "You already staked using this address.")
         } else {
-            const approveAmountEth = getStakeAmount()
+            const approveAmountEth = state.stakeRequired
 
             if (approveAmountEth === "0" || approveAmountEth === 0 || approveAmountEth === "") {
                 handleShowOnError()
@@ -379,7 +379,7 @@ function OWN_Mustachio() {
             handleShowOnError()
             _setState("txError", "You already staked using this address.")
         } else {
-            const stakeAmountEth = getStakeAmount()
+            const stakeAmountEth = state.stakeRequired
 
             if (stakeAmountEth === "0" || stakeAmountEth === 0) {
                 handleShowOnError()
@@ -509,9 +509,9 @@ function OWN_Mustachio() {
     }
 
     // get stake amount from text field
-    const getStakeAmount = () => {
-        return document.getElementById("stake-input-num").value
-    }
+    // const getStakeAmount = () => {
+    //     return document.getElementById("stake-input-num").value
+    // }
 
     // state updater
     const _setState = (name, value) => {
