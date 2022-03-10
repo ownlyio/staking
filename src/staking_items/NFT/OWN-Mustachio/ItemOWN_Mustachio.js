@@ -209,9 +209,9 @@ function ItemOWNMustachio(props) {
                         <div className="splatform-desc text-left font-semibold font-size-100">Duration</div>
                         {isConnected ? (
                             state.isStaked ? (
-                                <div className="splatform-desc text-right text-color-7 font-size-100">{addCommasToNumber(state.nftStakingDuration)} Days ({addCommasToNumber(state.userRemainingDuration)} remaining)</div>
+                                <div className="splatform-desc text-right text-color-7 font-size-100">{state.nftStakingDuration} Days ({state.userRemainingDuration} remaining)</div>
                             ) : (
-                                <div className="splatform-desc text-right text-color-7 font-size-100">{addCommasToNumber(state.nftStakingDuration)} Days</div>
+                                <div className="splatform-desc text-right text-color-7 font-size-100">{state.nftStakingDuration} Days</div>
                             )
                         ) : (
                             <div className="splatform-desc text-right text-color-7 font-size-100">Connect Wallet</div>

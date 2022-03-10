@@ -200,9 +200,6 @@ function OWN_Mustachio() {
         
         const currentItem = await _nftStakingContract.methods.getStakingItem(currentItemId).call()
         _setState("currentStakeItemId", currentItemId)
-
-        console.log("CurrentID: "+ currentItemId, "MintedID: "+ mintedId)
-        console.log(currentItem)
         
         // get OWN balance
         const ownBalance = await _stakingTokenContract.methods.balanceOf(acct).call()
@@ -473,7 +470,6 @@ function OWN_Mustachio() {
                     .then(async function(receipt) {
                         const lastMintedId = await _nftTokenContract.methods.getLastMintedTokenId().call()
                         _setState("mintedId", lastMintedId)
-                        console.log("last minted id: " + lastMintedId)
         
                         handleClosePleaseWait()
                         handleShowExit()
@@ -641,9 +637,9 @@ function OWN_Mustachio() {
                                             <p className="mb-3 neo-bold font-size-90">Duration</p>
                                             { state.isConnected ? (
                                                 state.isStaked ? (
-                                                    <p className="mb-3 neo-regular font-size-90">{addCommasToNumber(state.nftStakingDuration)} Days ({addCommasToNumber(state.userRemainingDuration)} remaining)</p>
+                                                    <p className="mb-3 neo-regular font-size-90">{state.nftStakingDuration} Days ({state.userRemainingDuration} remaining)</p>
                                                 ) : (
-                                                    <p className="mb-3 neo-regular font-size-90">{addCommasToNumber(state.nftStakingDuration)} Days</p>
+                                                    <p className="mb-3 neo-regular font-size-90">{state.nftStakingDuration} Days</p>
                                                 )
                                             ) : (
                                                 <p className="mb-3 neo-regular font-size-90">Connect Wallet</p>
@@ -675,9 +671,9 @@ function OWN_Mustachio() {
                                             <p className="mb-1 neo-bold font-size-110">Duration</p>
                                             { state.isConnected ? (
                                                 state.isStaked ? (
-                                                    <p className="mb-1 neo-regular font-size-90">{addCommasToNumber(state.nftStakingDuration)} Days ({addCommasToNumber(state.userRemainingDuration)} remaining)</p>
+                                                    <p className="mb-1 neo-regular font-size-90">{state.nftStakingDuration} Days ({state.userRemainingDuration} remaining)</p>
                                                 ) : (
-                                                    <p className="mb-1 neo-regular font-size-90">{addCommasToNumber(state.nftStakingDuration)} Days</p>
+                                                    <p className="mb-1 neo-regular font-size-90">{state.nftStakingDuration} Days</p>
                                                 )
                                             ) : (
                                                 <p className="mb-3 neo-regular font-size-90">Connect Wallet</p>
