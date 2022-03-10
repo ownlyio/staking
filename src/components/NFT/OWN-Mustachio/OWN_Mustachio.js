@@ -337,7 +337,7 @@ function OWN_Mustachio() {
                 handleShowOnError()
                 _setState("txError", "Please provide a valid amount!")
             } else {
-                if (state.currentOwnBalance < state.stakeRequired) {
+                if (Number(state.currentOwnBalance) < Number(state.stakeRequired)) {
                     handleShowOnError()
                     _setState("txError", "Insufficient balance! Please buy more OWN Tokens to proceed.")
                 } else {
@@ -758,7 +758,7 @@ function OWN_Mustachio() {
                     <div className="text-center mb-3">
                         <FontAwesomeIcon color="green" size="6x" icon={faCheckCircle} />
                     </div>
-                    <p className="app-success-modal-content text-center font-andes text-lg">Your transaction was approved. You can now proceed.</p>
+                    <p className="app-success-modal-content text-center font-andes text-lg">Your transaction was approved. You may now proceed to the next step. Click on the "STAKE" button.</p>
                 </Modal.Body>
                 <Modal.Footer className="justify-content-center">
                     <Button className="font-w-hermann w-hermann-reg" variant="secondary" onClick={handleCloseOnApprove}>
