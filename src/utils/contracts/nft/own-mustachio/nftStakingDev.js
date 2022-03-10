@@ -1,4 +1,4 @@
-const nftStakingAddress = "0xb4abfe09ae2abdb3ec6fdf8d99d0b604b03eb85d"
+const nftStakingAddress = "0x8f31E7190b8088196D8210EaE17e63De85Ed43Fa"
 const nftStakingAbi = [
     {
         "anonymous":false,
