@@ -833,7 +833,7 @@ function CakeLP_OWN() {
             </Modal>     
 
             {/* Modal for change detection */}
-            <Modal show={showDetected} onHide={handleCloseDetected} backdrop="static" keyboard={false} size="sm" centered>
+            {/* <Modal show={showDetected} onHide={handleCloseDetected} backdrop="static" keyboard={false} size="sm" centered>
                 <Modal.Body>
                     <div className="text-center mb-3">
                         <FontAwesomeIcon color="green" size="6x" icon={faExclamationCircle} />
@@ -845,7 +845,7 @@ function CakeLP_OWN() {
                         Reload
                     </Button>
                 </Modal.Footer>
-            </Modal>     
+            </Modal>      */}
 
             {/* Modal for stakers leaderboard */}
             <Modal show={showTopStakers} onHide={handleCloseTopStakers} backdrop="static" keyboard={false} size="lg" centered>

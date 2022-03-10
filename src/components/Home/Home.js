@@ -82,7 +82,7 @@ export default function Home(props) {
                                     <FontAwesomeIcon icon={faWallet} size="4x" color="#616161" />
                                 </div>
                                 <p className="hiw-item-title font-size-150 text-center font-semibold text-color-3 mb-3">Use your Metamask Wallet</p>
-                                <p className="hiw-item-sub font-size-110 text-center neo-light text-color-6 mb-0">Connect your Metamask Wallet on our platform to participate.</p>
+                                <p className="hiw-item-sub font-size-110 text-center neo-light text-color-6 mb-0">Connect your Metamask Wallet on our platform to participate in the staking.</p>
                             </div>
                         </div>
                         <div className="col-12 col-md-4 mt-3">
