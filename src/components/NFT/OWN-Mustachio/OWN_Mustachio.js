@@ -25,6 +25,7 @@ import { getApr } from '../../../utils/apr'
 import networks from '../../../utils/networks'
 
 function OWN_Mustachio() {
+    var timer
     let web3, nftStakingContract, nftTokenContract
     const [_web3, setWeb3] = useState()
     const [_nftStakingContract, setNftStakingContract] = useState()
@@ -182,7 +183,7 @@ function OWN_Mustachio() {
     }
 
     // function that will get the details of the user's account (balances, staked tokens etc)
-    const getDetailsOfUserAcct = async acct => {
+    const getDetailsOfUserAcct = async (acct) => {
         const currentItemId = await _nftStakingContract.methods.getCurrentStakingItemId(acct, nftTokenAddress).call()
         _setState("currentStakeItemId", currentItemId)
         if (Number(currentItemId) === 0) { // no staking active
@@ -192,9 +193,9 @@ function OWN_Mustachio() {
         }
         
         const mintedId = await _nftStakingContract.methods.getMintedStakingItemId(acct, nftTokenAddress).call()
-        if (Number(mintedId) === 0) { // already claimed the nft
+        if (Number(mintedId) === 0) { 
             _setState("accountAlreadyClaimed", false)
-        } else {
+        } else { // already claimed the nft
             _setState("accountAlreadyClaimed", true)
         }
         
@@ -222,23 +223,22 @@ function OWN_Mustachio() {
             const remainingDuration = Number(currentItem.startTime) + Number(duration)
             const calculatedRemaining = await convertTimestamp(remainingDuration)
 
-            if (calculatedRemaining <= 0) {
+            if (calculatedRemaining > 0) {
                 _setState("userRemainingDuration", calculatedRemaining)
-                _setState("isStakingFinished", true)
+                _setState("isStakingFinished", false)
             } else {
                 _setState("userRemainingDuration", 0)
-                _setState("isStakingFinished", false)
+                _setState("isStakingFinished", true)
             }
         } else { // no staking active
             _setState("dateStaked", "--")
             _setState("userOwnDeposits", 0)
             _setState("userRemainingDuration", 0)
-            _setState("isStakingFinished", false)
+            _setState("isStakingFinished", true)
         }
 
         _setState("isLoaded", true)
-        
-        // refresh data every 10 seconds
+
         setInterval(() => {
             async function _getDetails() {
                 // get total deposits
@@ -254,27 +254,22 @@ function OWN_Mustachio() {
                 _setState("currentOwnBalance", _web3.utils.fromWei(ownBalance))
 
                 // get staking duration
-                const duration = await _nftTokenContract.methods.getStakeDuration().call()
-                const calculatedDuration = convertSecToDays(duration)
-                _setState("nftStakingDuration", calculatedDuration)
+                // const duration = await _nftTokenContract.methods.getStakeDuration().call()
+                // const calculatedDuration = convertSecToDays(duration)
+                // _setState("nftStakingDuration", calculatedDuration)
 
                 if (Number(currentItemId) !== 0) { // staking active            
-                    const remainingDuration = Number(currentItem.startTime) + Number(duration)
-                    const calculatedRemaining = await convertTimestamp(remainingDuration)
-                    console.log("calculated remaining: "+calculatedRemaining)
+                    // const remainingDuration = Number(currentItem.startTime) + Number(duration)
+                    // const calculatedRemaining = await convertTimestamp(remainingDuration)
+                    // console.log("calculated remaining: "+calculatedRemaining)
         
-                    if (calculatedRemaining <= 0) {
-                        _setState("userRemainingDuration", calculatedRemaining)
-                        _setState("isStakingFinished", true)
-                    } else {
-                        _setState("userRemainingDuration", 0)
-                        _setState("isStakingFinished", false)
-                    }
-                } else { // no staking active
-                    _setState("dateStaked", "--")
-                    _setState("userOwnDeposits", 0)
-                    _setState("userRemainingDuration", 0)
-                    _setState("isStakingFinished", false)
+                    // if (calculatedRemaining > 0) {
+                    //     _setState("userRemainingDuration", calculatedRemaining)
+                    //     _setState("isStakingFinished", false)
+                    // } else {
+                    //     _setState("userRemainingDuration", 0)
+                    //     _setState("isStakingFinished", true)
+                    // }
                 }
             }
             

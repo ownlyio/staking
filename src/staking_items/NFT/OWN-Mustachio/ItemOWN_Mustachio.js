@@ -42,41 +42,47 @@ function ItemOWNMustachio(props) {
     // function that will get the details of the user's account 
     const getDetailsOfUserAcct = async () => {
         const currentItemId = await _nftStakingContract.methods.getCurrentStakingItemId(acct, nftTokenAddress).call()
-        const currentItem = await _nftStakingContract.methods.getStakingItem(currentItemId).call()
-
-        if (Number(currentItem.startTime) !== 0) {
-            if (currentItem.isWithdrawnWithoutMinting || currentItem.isClaimed) {
-                _setState("dateStaked", "--")
-            } else {
-                const options = {year: 'numeric', month: 'long', day: 'numeric'}
-                _setState("dateStaked", new Date(currentItem.startTime * 1000).toLocaleDateString("en-US", options))
-            }
-        }
-
-        if (Number(currentItem.amount) !== 0) {
-            if (currentItem.isWithdrawnWithoutMinting || currentItem.isClaimed) {
-                _setState("userOwnDeposits", 0)
-                _setState("isStaked", false)
-            } else {
-                _setState("userOwnDeposits", _web3.utils.fromWei(currentItem.amount))
-                _setState("isStaked", true)
-            }
-        } else {
-            _setState("userOwnDeposits", 0)
+        _setState("currentStakeItemId", currentItemId)
+        if (Number(currentItemId) === 0) { // no staking active
             _setState("isStaked", false)
+        } else {
+            _setState("isStaked", true)
         }
+        
+        const currentItem = await _nftStakingContract.methods.getStakingItem(currentItemId).call()
+        _setState("currentStakeItemId", currentItemId)
+        
+        // get OWN balance
+        const ownBalance = await _stakingTokenContract.methods.balanceOf(acct).call()
+        _setState("currentOwnBalance", _web3.utils.fromWei(ownBalance))
 
         // get staking duration
         const duration = await _nftTokenContract.methods.getStakeDuration().call()
         const calculatedDuration = convertSecToDays(duration)
         _setState("nftStakingDuration", calculatedDuration)
 
-        if (Number(currentItem.startTime) !== 0) {
+        if (Number(currentItemId) !== 0) { // staking active
+            const options = {year: 'numeric', month: 'long', day: 'numeric'}
+            _setState("dateStaked", new Date(currentItem.startTime * 1000).toLocaleDateString("en-US", options))
+            
+            _setState("userOwnDeposits", _web3.utils.fromWei(currentItem.amount))
+            
             const remainingDuration = Number(currentItem.startTime) + Number(duration)
             const calculatedRemaining = await convertTimestamp(remainingDuration)
-            _setState("userRemainingDuration", calculatedRemaining)
-        }
 
+            if (calculatedRemaining > 0) {
+                _setState("userRemainingDuration", calculatedRemaining)
+                _setState("isStakingFinished", false)
+            } else {
+                _setState("userRemainingDuration", 0)
+                _setState("isStakingFinished", true)
+            }
+        } else { // no staking active
+            _setState("dateStaked", "--")
+            _setState("userOwnDeposits", 0)
+            _setState("userRemainingDuration", 0)
+            _setState("isStakingFinished", true)
+        }
 
         _setState("isLoaded", true)
     }
