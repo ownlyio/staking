@@ -7,6 +7,10 @@
   .hiw-item-sub {
     height: 80px;
   }
+
+  .home-sub {
+    width: 80% !important;
+  }
 }
 
 @media (max-width: 1200px) {
@@ -17,6 +21,10 @@
   .hiw-item-sub {
     height: 100px;
   }
+
+  .home-title {
+    width: 100% !important;
+  }
 }
 
 @media (max-width: 991px) {
@@ -26,6 +34,10 @@
 
   .home-title {
     font-size: 2.5rem !important;
+  }
+
+  .home-sub {
+    width: 95% !important;
   }
 
   .hiw-item-content {
@@ -46,6 +58,14 @@
   .hiw-item-sub {
     height: auto;
   }
+
+  .home-title {
+    width: 85% !important;
+  }
+
+  .home-sub {
+    width: 90% !important;
+  }
 }
 
 @media (max-width: 568px) {
@@ -53,6 +73,10 @@
   .hiw-title,
   .splatform-title {
     font-size: 1.7rem !important;
+  }
+
+  .home-title {
+    width: 75% !important;
   }
 
   .home-sub,
@@ -82,5 +106,9 @@
 
   .splatform-desc {
     font-size: 0.8rem !important;
+  }
+
+  .home-title {
+    width: 80% !important;
   }
 }

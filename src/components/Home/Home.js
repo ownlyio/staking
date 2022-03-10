@@ -54,8 +54,8 @@ export default function Home(props) {
                     <div className="row justify-content-center align-items-center h-100">
                         <div className="col-12 col-md-6">
                             <div className="home-content">
-                                <p className="home-title font-size-320 text-color-3 neo-bold mb-4">Stake your OWN Tokens, Earn Rewards!</p>
-                                <p className="home-sub font-size-130 text-color-6 mb-5">Stake your $OWN tokens to our staking platform and earn rewards. Get exclusive NFTs from our collection. Keep track of your coins and reap rewards in tokens or NFTs.</p>
+                                <p className="home-title font-size-320 text-color-3 neo-bold mb-4">Stake your Tokens, Earn Rewards</p>
+                                <p className="home-sub font-size-130 text-color-6 mb-5">Collect OWN, other Tokens, and even Ownly NFTs as rewards by just staking in our platform! Bring in some interest to your wallet while effortlessly #HODLing your tokens.</p>
                                 <div className="home-cta d-flex align-items-center">
                                     <HashLink smooth to="#staking-platforms" className="home-btn-1 btn btn-custom-1 rounded-lg" scroll={el => scrollWithOffset(el)}>See Staking Options</HashLink>
                                     <HashLink smooth to="#how-it-works" className="home-btn-2 btn btn-custom-8 rounded-lg" scroll={el => scrollWithOffset(el)}>How it works</HashLink>
@@ -73,7 +73,7 @@ export default function Home(props) {
             <div id="how-it-works">
                 <div className="container h-100">
                     <p className="hiw-title font-size-250 text-center text-color-2 neo-bold mb-3">How this works</p>
-                    <p className="hiw-sub font-size-130 text-center text-color-7 mb-2">Simple steps to earn rewards just by staking your tokens</p>
+                    <p className="hiw-sub font-size-130 text-center text-color-7 mb-2">3 simple steps to stake and earn rewards through our platform</p>
 
                     <div className="row justify-content-center align-items-start">
                         <div className="col-12 col-md-4 mt-3">
@@ -82,7 +82,7 @@ export default function Home(props) {
                                     <FontAwesomeIcon icon={faWallet} size="4x" color="#616161" />
                                 </div>
                                 <p className="hiw-item-title font-size-150 text-center font-semibold text-color-3 mb-3">Use your Metamask Wallet</p>
-                                <p className="hiw-item-sub font-size-110 text-center neo-light text-color-6 mb-0">Connect your Metamask Wallet on our platform to participate in the staking.</p>
+                                <p className="hiw-item-sub font-size-110 text-center neo-light text-color-6 mb-0">Connect your Metamask wallet and add the amount you’re willing to stake.</p>
                             </div>
                         </div>
                         <div className="col-12 col-md-4 mt-3">
@@ -91,7 +91,7 @@ export default function Home(props) {
                                     <FontAwesomeIcon icon={faReceipt} size="4x" color="#616161" />
                                 </div>
                                 <p className="hiw-item-title font-size-150 text-center font-semibold text-color-3 mb-3">Stake your tokens</p>
-                                <p className="hiw-item-sub font-size-110 text-center neo-light text-color-6 mb-0">Approve and stake your coins from your own wallet to our platform.</p>
+                                <p className="hiw-item-sub font-size-110 text-center neo-light text-color-6 mb-0">Approve and stake your tokens from your own wallet to our platform.</p>
                             </div>
                         </div>
                         <div className="col-12 col-md-4 mt-3">
@@ -100,7 +100,7 @@ export default function Home(props) {
                                     <FontAwesomeIcon icon={faCoins} size="4x" color="#616161" />
                                 </div>
                                 <p className="hiw-item-title font-size-150 text-center font-semibold text-color-3 mb-3">Earn your rewards</p>
-                                <p className="hiw-item-sub font-size-110 text-center neo-light text-color-6 mb-0">Sit back, relax, and receive rewards directly to your own wallet - coins and/or NFTs!</p>
+                                <p className="hiw-item-sub font-size-110 text-center neo-light text-color-6 mb-0">Sit back, relax, and receive rewards directly to your wallet in tokens and/or NFTs!</p>
                             </div>
                         </div>
                     </div>
@@ -109,7 +109,7 @@ export default function Home(props) {
             <div id="staking-platforms" className="mb-5">
                 <div className="container">
                     <p className="splatform-title font-size-250 text-center text-color-4 neo-bold mb-3">Our Staking Platforms</p>
-                    <p className="splatform-sub font-size-130 text-center text-color-7 mb-5">Stake your OWN Tokens and earn tokens, NFTs or other tokens!</p>
+                    <p className="splatform-sub font-size-130 text-center text-color-7 mb-5">Staking options to choose from to earn tokens or NFTs as rewards</p>
 
                     <div className="splatform-btns mb-4">
                         <div className="d-flex w-100">

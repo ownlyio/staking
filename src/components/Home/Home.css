@@ -3,8 +3,12 @@
   height: 100vh;
 }
 
+.home-title {
+  width: 85%;
+}
+
 .home-sub {
-  width: 80%;
+  width: 75%;
 }
 
 .home-cta a {
