@@ -5,12 +5,12 @@ import axios from 'axios'
 import ownBusd from '../../../img/staking/own-busd.png'
 
 // PRODUCTION
-// import { stakingTokenAbi, stakingTokenAddress } from '../../../utils/contracts/liquidity/cakelp-own/stakingToken'
-// import { stakingAbi, stakingAddress } from '../../../utils/contracts/liquidity/cakelp-own/staking'
+import { stakingTokenAbi, stakingTokenAddress } from '../../../utils/contracts/liquidity/cakelp-own/stakingToken'
+import { stakingAbi, stakingAddress } from '../../../utils/contracts/liquidity/cakelp-own/staking'
 
 // DEVELOPMENT
-import { stakingTokenAbi, stakingTokenAddress } from '../../../utils/contracts/liquidity/cakelp-own/stakingTokenDev'
-import { stakingAbi, stakingAddress } from '../../../utils/contracts/liquidity/cakelp-own/stakingDev'
+// import { stakingTokenAbi, stakingTokenAddress } from '../../../utils/contracts/liquidity/cakelp-own/stakingTokenDev'
+// import { stakingAbi, stakingAddress } from '../../../utils/contracts/liquidity/cakelp-own/stakingDev'
 
 // Utils
 import { configureWeb3 } from '../../../utils/web3Init'
@@ -110,9 +110,9 @@ function ItemCakeLPOWN(props) {
     useEffect(() => {
         async function _init() {
             // WEB3 RPC - BSC MAINNET
-            // web3 = configureWeb3("https://bsc-dataseed.binance.org/")
+            web3 = configureWeb3("https://bsc-dataseed.binance.org/")
             // WEB3 RPC - BSC TESTNET (COMMENT WHEN PRODUCTION)
-            web3 = configureWeb3("https://data-seed-prebsc-1-s1.binance.org:8545/")
+            // web3 = configureWeb3("https://data-seed-prebsc-1-s1.binance.org:8545/")
 
             // RPC Initialize
             stakingContract = new web3.eth.Contract(stakingAbi, stakingAddress)

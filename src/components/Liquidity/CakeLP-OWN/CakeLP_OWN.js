@@ -13,12 +13,12 @@ import busdLogo from '../../../img/busd/busd.webp'
 import metamask from '../../../img/metamask.png'
 
 // PRODUCTION
-// import { stakingTokenAbi, stakingTokenAddress } from '../../../utils/contracts/liquidity/cakelp-own/stakingToken'
-// import { stakingAbi, stakingAddress } from '../../../utils/contracts/liquidity/cakelp-own/staking'
+import { stakingTokenAbi, stakingTokenAddress } from '../../../utils/contracts/liquidity/cakelp-own/stakingToken'
+import { stakingAbi, stakingAddress } from '../../../utils/contracts/liquidity/cakelp-own/staking'
 
 // DEVELOPMENT
-import { stakingTokenAbi, stakingTokenAddress } from '../../../utils/contracts/liquidity/cakelp-own/stakingTokenDev'
-import { stakingAbi, stakingAddress } from '../../../utils/contracts/liquidity/cakelp-own/stakingDev'
+// import { stakingTokenAbi, stakingTokenAddress } from '../../../utils/contracts/liquidity/cakelp-own/stakingTokenDev'
+// import { stakingAbi, stakingAddress } from '../../../utils/contracts/liquidity/cakelp-own/stakingDev'
 
 // Utils
 import { configureWeb3 } from '../../../utils/web3Init'
@@ -52,9 +52,9 @@ function CakeLP_OWN() {
 
     // Other Variables
     // PRODUCTION
-    // const explorerUrl = "https://bscscan.com/tx/"
+    const explorerUrl = "https://bscscan.com/tx/"
     // DEVELOPMENT
-    const explorerUrl = "https://testnet.bscscan.com/tx/"
+    // const explorerUrl = "https://testnet.bscscan.com/tx/"
 
     // Modals
     const [showNotConnected, setShowNotConnected] = useState(false)
@@ -94,9 +94,9 @@ function CakeLP_OWN() {
     useEffect(() => {
         async function _init() {
             // WEB3 RPC - BSC MAINNET
-            // web3 = configureWeb3("https://bsc-dataseed.binance.org/")
+            web3 = configureWeb3("https://bsc-dataseed.binance.org/")
             // WEB3 RPC - BSC TESTNET (COMMENT WHEN PRODUCTION)
-            web3 = configureWeb3("https://data-seed-prebsc-1-s1.binance.org:8545/")
+            // web3 = configureWeb3("https://data-seed-prebsc-1-s1.binance.org:8545/")
 
             // RPC Initialize
             stakingContract = new web3.eth.Contract(stakingAbi, stakingAddress)
@@ -130,8 +130,8 @@ function CakeLP_OWN() {
         }
         
         _init()
-        accountChangedListener()
-        networkChangedListener()
+        // accountChangedListener()
+        // networkChangedListener()
         getLiquidityStakingData(stakingAddress, 0)
     }, [])
     
@@ -193,29 +193,29 @@ function CakeLP_OWN() {
     }
 
     // account change listener (metamask only)
-    const accountChangedListener = () => {
-        if (window.ethereum) {
-            window.ethereum.on('accountsChanged', (accounts) => {
-                _setState("detectedChangeMessage", "Account change detected!")
-                handleShowDetected()
-            })
-        }
-    }
+    // const accountChangedListener = () => {
+    //     if (window.ethereum) {
+    //         window.ethereum.on('accountsChanged', (accounts) => {
+    //             _setState("detectedChangeMessage", "Account change detected!")
+    //             handleShowDetected()
+    //         })
+    //     }
+    // }
 
     // network change listener (metamask only)
-    const networkChangedListener = () => {
-        if (window.ethereum) {
-            window.ethereum.on('chainChanged', (chainId) => {
-                // PRODUCTION
-                // if (chainId !== "0x38") {
-                // DEVELOPMENT
-                if (chainId !== "0x61") { 
-                    _setState("detectedChangeMessage", "Network change detected!")
-                    handleShowDetected()
-                }
-            })
-        }
-    }
+    // const networkChangedListener = () => {
+    //     if (window.ethereum) {
+    //         window.ethereum.on('chainChanged', (chainId) => {
+    //             // PRODUCTION
+    //             if (chainId !== "0x38") {
+    //             // DEVELOPMENT
+    //             // if (chainId !== "0x61") { 
+    //                 _setState("detectedChangeMessage", "Network change detected!")
+    //                 handleShowDetected()
+    //             }
+    //         })
+    //     }
+    // }
 
     // function that will automatically update the details after approve, stake, claim and exit
     const updateDetails = async () => {
@@ -278,9 +278,9 @@ function CakeLP_OWN() {
             await _web3.currentProvider.request({
                 method: "wallet_switchEthereumChain",
                 // PRODUCTION
-                // params: [{ chainId: "0x38" }],
+                params: [{ chainId: "0x38" }],
                 // DEVELOPMENT
-                params: [{ chainId: "0x61" }],
+                // params: [{ chainId: "0x61" }],
             })
 
             handleCloseWrongNetwork()
@@ -306,9 +306,9 @@ function CakeLP_OWN() {
             const netId = await _web3.eth.net.getId() // 97 - BSC testnet, 56 - BSC Mainnet
             
             // PRODUCTION
-            // if (netId === 56) {
+            if (netId === 56) {
             // DEVELOPMENT
-            if (netId === 97) {
+            // if (netId === 97) {
                 const acct = await window.ethereum.request({ method: "eth_requestAccounts"})
                 if (acct.length > 0) {
                     _setState("isConnected", true)
@@ -650,19 +650,19 @@ function CakeLP_OWN() {
 
 
                                     {/* PRODUCTION */}
-                                    {/* <p className="font-size-90 text-color-6 neo-light mb-1">
+                                    <p className="font-size-90 text-color-6 neo-light mb-1">
                                         <a href={`https://bscscan.com/address/${stakingAddress}`} target="_blank" rel="noreferrer" className="stake-link">
                                             <b>View Staking Contract</b>
                                             &nbsp;<FontAwesomeIcon size="sm" icon={faExternalLinkAlt} />
                                         </a>
-                                    </p> */}
+                                    </p>
                                     {/* DEVELOPMENT */}
-                                    <p className="font-size-90 text-color-6 neo-light mb-1">
+                                    {/* <p className="font-size-90 text-color-6 neo-light mb-1">
                                         <a href={`https://testnet.bscscan.com/address/${stakingAddress}`} target="_blank" rel="noreferrer" className="stake-link">
                                             <b>View Smart Contract</b>
                                             &nbsp;<FontAwesomeIcon color="black" size="sm" icon={faExternalLinkAlt} />
                                         </a>
-                                    </p>
+                                    </p> */}
                                 </div>
                             </div>
                         </div>
@@ -813,22 +813,22 @@ function CakeLP_OWN() {
                         <FontAwesomeIcon color="green" size="6x" icon={faExclamationCircle} />
                     </div>
                     {/* PRODUCTION */}
-                    {/* <p className="app-network-modal-content text-center font-andes text-lg">Please connect to BSC Mainnet</p> */}
+                    <p className="app-network-modal-content text-center font-andes text-lg">Please connect to BSC Mainnet</p>
                     {/* DEVELOPMENT */}
-                    <p className="app-network-modal-content text-center font-andes text-lg">Please connect to BSC Testnet</p>
+                    {/* <p className="app-network-modal-content text-center font-andes text-lg">Please connect to BSC Testnet</p> */}
                 </Modal.Body>
                 <Modal.Footer className="justify-content-center">
                     <Button className="font-w-hermann w-hermann-reg" variant="secondary" onClick={handleCloseWrongNetwork}>
                         Close
                     </Button>
                     {/* PRODUCTION */}
-                    {/* <Button className="font-w-hermann w-hermann-reg" variant="primary" onClick={() => switchNetwork("bscmainnet")}>
-                        Switch Network
-                    </Button> */}
-                    {/* DEVELOPMENT */}
-                    <Button className="font-w-hermann w-hermann-reg" variant="primary" onClick={() => switchNetwork("bsctestnet")}>
+                    <Button className="font-w-hermann w-hermann-reg" variant="primary" onClick={() => switchNetwork("bscmainnet")}>
                         Switch Network
                     </Button>
+                    {/* DEVELOPMENT */}
+                    {/* <Button className="font-w-hermann w-hermann-reg" variant="primary" onClick={() => switchNetwork("bsctestnet")}>
+                        Switch Network
+                    </Button> */}
                 </Modal.Footer>
             </Modal>     
 
