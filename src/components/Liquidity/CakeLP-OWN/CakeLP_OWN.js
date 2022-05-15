@@ -557,9 +557,17 @@ function CakeLP_OWN() {
                                                 <button type="button" onClick={handleShowNotConnected} className="btn stake-btn-func btn-custom-2" disabled={state.isApproved}>APPROVE</button>
                                             )}
                                             <button onClick={enterStaking} type="button" className="btn stake-btn-func btn-custom-2" disabled={!state.isApproved}>STAKE</button> */}
-                                            <button type="button" className="btn stake-btn-func btn-custom-2" disabled={true}>APPROVE</button>
-                                            <button type="button" className="btn stake-btn-func btn-custom-2" disabled={true}>STAKE</button>
+                                            {/*<button type="button" className="btn stake-btn-func btn-custom-2" disabled={true}>APPROVE</button>*/}
+                                            {/*<button type="button" className="btn stake-btn-func btn-custom-2" disabled={true}>STAKE</button>*/}
                                         </div>
+                                        {/*<div className="d-flex justify-content-between mb-1">*/}
+                                        {/*    { state.isConnected ? (*/}
+                                        {/*        <button onClick={approveStaking} type="button" className="btn stake-btn-func btn-custom-2" disabled={state.isApproved}>APPROVE</button>*/}
+                                        {/*    ) : (*/}
+                                        {/*        <button type="button" onClick={handleShowNotConnected} className="btn stake-btn-func btn-custom-2" disabled={state.isApproved}>APPROVE</button>*/}
+                                        {/*    )}*/}
+                                        {/*    <button onClick={enterStaking} type="button" className="btn stake-btn-func btn-custom-2" disabled={!state.isApproved}>STAKE</button>*/}
+                                        {/*</div>*/}
                                         <div className="d-flex justify-content-between">
                                             <button onClick={claimRewards} type="button" className="btn stake-btn-func btn-custom-2" disabled={!state.isLoaded}>CLAIM</button>
                                             <button onClick={claimAndWithdraw} type="button" className="btn stake-btn-func btn-custom-2" disabled={!state.isLoaded}>CLAIM & WITHDRAW</button>
@@ -587,25 +595,26 @@ function CakeLP_OWN() {
                                                 <p className="mb-3 neo-regular font-size-90">Connect Wallet</p>
                                             )}
                                         </div>
-                                        <div className="d-flex justify-content-between">
-                                            <p className="mb-3 neo-bold font-size-90">Your Rate</p>
-                                            { state.isConnected ? (
-                                                <p className="mb-3 neo-regular font-size-90">{addCommasToNumber(state.userRate, 5)} OWN / week</p>
-                                            ) : (
-                                                <p className="mb-3 neo-regular font-size-90">Connect Wallet</p>
-                                            )}
-                                        </div>
-                                        <div className="d-flex justify-content-between">
-                                            <p className="mb-3 neo-bold font-size-90">APR</p>
-                                            <p className="mb-3 neo-regular font-size-90">{state.apr} %</p>
-                                        </div>
+                                        {/*<div className="d-flex justify-content-between">*/}
+                                        {/*    <p className="mb-3 neo-bold font-size-90">Your Rate</p>*/}
+                                        {/*    { state.isConnected ? (*/}
+                                        {/*        <p className="mb-3 neo-regular font-size-90">{addCommasToNumber(state.userRate, 5)} OWN / week</p>*/}
+                                        {/*    ) : (*/}
+                                        {/*        <p className="mb-3 neo-regular font-size-90">Connect Wallet</p>*/}
+                                        {/*    )}*/}
+                                        {/*</div>*/}
+                                        {/*<div className="d-flex justify-content-between">*/}
+                                        {/*    <p className="mb-3 neo-bold font-size-90">APR</p>*/}
+                                        {/*    <p className="mb-3 neo-regular font-size-90">{state.apr} %</p>*/}
+                                        {/*</div>*/}
                                         <div className="d-flex justify-content-between">
                                             <p className="mb-3 neo-bold font-size-90">Total Rewards</p>
                                             <p className="mb-3 neo-regular font-size-90">120,000,000 OWN</p>
                                         </div>
                                         <div className="d-flex justify-content-between">
                                             <p className="mb-0 neo-bold font-size-90">Duration</p>
-                                            <p className="mb-0 neo-regular font-size-90">120 Days ({state.lpStakingDuration} remaining)</p>
+                                            {/*<p className="mb-0 neo-regular font-size-90">120 Days ({state.lpStakingDuration} remaining)</p>*/}
+                                            <p className="mb-0 neo-regular font-size-90">120 Days (Ended)</p>
                                         </div>
                                     </div>
                                     <div className="d-block d-sm-none">

@@ -177,29 +177,30 @@ function ItemCakeLPOWN(props) {
                             <div className="splatform-desc text-right text-color-7 font-size-100">Connect Wallet</div>
                         )}
                     </div>
-                    <div className="d-flex justify-content-between mb-3">
-                        <div className="splatform-desc text-left font-semibold font-size-100">Your Rate</div>
-                        {isConnected ? (
-                            <div className="splatform-desc text-right text-color-7 font-size-100">{addCommasToNumber(state.userRate, 5)} OWN</div>
-                        ) : (
-                            <div className="splatform-desc text-right text-color-7 font-size-100">Connect Wallet</div>
-                        )}
-                    </div>
-                    <div className="d-flex justify-content-between mb-3">
-                        <div className="splatform-desc text-left font-semibold font-size-100">APR</div>
-                        <div className="splatform-desc text-right text-color-7 font-size-100">{state.apr} %</div>
-                    </div>
+                    {/*<div className="d-flex justify-content-between mb-3">*/}
+                    {/*    <div className="splatform-desc text-left font-semibold font-size-100">Your Rate</div>*/}
+                    {/*    {isConnected ? (*/}
+                    {/*        <div className="splatform-desc text-right text-color-7 font-size-100">{addCommasToNumber(state.userRate, 5)} OWN</div>*/}
+                    {/*    ) : (*/}
+                    {/*        <div className="splatform-desc text-right text-color-7 font-size-100">Connect Wallet</div>*/}
+                    {/*    )}*/}
+                    {/*</div>*/}
+                    {/*<div className="d-flex justify-content-between mb-3">*/}
+                    {/*    <div className="splatform-desc text-left font-semibold font-size-100">APR</div>*/}
+                    {/*    <div className="splatform-desc text-right text-color-7 font-size-100">{state.apr} %</div>*/}
+                    {/*</div>*/}
                     <div className="d-flex justify-content-between mb-3">
                         <div className="splatform-desc text-left font-semibold font-size-100">Total Rewards</div>
                         <div className="splatform-desc text-right text-color-7 font-size-100">120,000,000 OWN</div>
                     </div>
                     <div className="d-flex justify-content-between mb-3">
                         <div className="splatform-desc text-left font-semibold font-size-100">Duration</div>
-                        <div className="splatform-desc text-right text-color-7 font-size-100">120 Days ({state.lpStakingDuration} remaining)</div>
+                        {/*<div className="splatform-desc text-right text-color-7 font-size-100">120 Days ({state.lpStakingDuration} remaining)</div>*/}
+                        <div className="splatform-desc text-right text-color-7 font-size-100">Ended</div>
                     </div>
                 </div>
                 <div className="splatform-item-btn">
-                    <Link to="/cakelp-own" className="btn btn-custom-3 w-100 font-size-120">Stake Now!</Link>
+                    <Link to="/cakelp-own" className="btn btn-custom-3 w-100 font-size-120">Claim Rewards!</Link>
                 </div>
             </div>
 
